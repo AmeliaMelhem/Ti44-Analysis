@@ -9,8 +9,7 @@ Created on Wed Jun 15 15:22:20 2022
 
 ## Assumes Z = 0.01 and that WD core mass is equal to total mass
 
-## Mass range is different for buffer mass max and min, this assume they are the same
-
+## Mass range is different for buffer mass max and min, *
 
 import numpy as np
 
@@ -24,8 +23,7 @@ else:
 
 
 
-## Removes enties that are not CO-CO WD binaries or fit Z = 0.01 conditions
-
+## Next 3 for loops remove entries that are not CO-CO WD binaries or fit Z = 0.01 conditions
 
 
 xList = [] #Index of entries to be removed
@@ -43,9 +41,7 @@ for x in range(len(dataset)):
 
 dataset = np.delete(dataset, xList, axis = 0)
 
-datasetMin, datasetMax = dataset
-
-
+datasetMin, datasetMax = dataset, dataset # initialize the two differing datasets
 
 
 xList = [] 
@@ -76,26 +72,46 @@ datasetMax = np.delete(datasetMax, xList, axis = 0)
 
 
 
-#tie to IDs
+# Finds buffer mass min, stores in list MBuffMin with system ID
 
-
-M_buff_Min = []
-
-for x in Range(len(dataset)):
+MBuffMin = np.zeros((1,3))
+for x in range(len(datasetMin)):
     a = -3.3243
     b = -6.7603
     c = -3.0043
     
-    M_buff_Min = ()
+    Mass1 = datasetMin[(x,3)]
+    Mass2 = datasetMin[(x,4)]
     
+    
+    MBuffMin1 = 10**(a + b*np.log10(Mass1) + c*(np.log10(Mass1)**2))
+    MBuffMin2 = 10**(a + b*np.log10(Mass2) + c*(np.log10(Mass2)**2))
+    
+    MBuffMin = np.concatenate((MBuffMin, [[datasetMin[(x,0)], MBuffMin1, MBuffMin2]]))
+    
+MBuffMin = np.delete(MBuffMin, 0, axis = 0)
 
 
 
 
-M_buff_Max
+# Finds buffer mass max, stores in list MBuffMax with system ID
 
+MBuffMax = np.zeros((1,3))
 
-
+for x in range(len(datasetMax)):
+    a = -2.9129
+    b = -6.1056
+    c = -5.0948
+    
+    Mass1 = datasetMax[(x,3)]
+    Mass2 = datasetMax[(x,4)]
+    
+    MBuffMax1 = 10**(a + b*np.log10(Mass1) + c*(np.log10(Mass1)**2))
+    MBuffMax2 = 10**(a + b*np.log10(Mass2) + c*(np.log10(Mass2)**2))
+    
+    MBuffMax = np.concatenate((MBuffMax, [[datasetMax[(x,0)], MBuffMax1, MBuffMax2]]))
+    
+MBuffMax = np.delete(MBuffMax, 0, axis = 0)
 
 
 
