@@ -3,30 +3,30 @@
 """
 Created on Wed Jun 15 15:22:20 2022
 
-@author: amymelhem
+@authors: Amelia Melhem and Alexis Petty
 """
 
+###
 
 ## Assumes Z = 0.01 and that WD core mass is equal to total mass
+## Also assumes that the buffer mass of the He is equal to the total He mass
 
-## Mass range is different for buffer mass max and min, *
 
 import numpy as np
 import pandas as pd
-from collections import OrderedDict 
 
-x = 0 # 0 for first file, 1 for second
+file = 0 # 0 for first file, 1 for second
 
-if x == 0:
+if file == 1:
     dataset = np.loadtxt("./SeBa_aa_020418_production_run_wdwd_bob.data")
+    fileName = 'SeBa_aa_with_He.txt'
 else: 
     dataset = dataset = np.loadtxt("./SeBa_ag_020418_production_run_wdwd_bob.data")
+    fileName = 'SeBa_ag_with_He.txt'
 
 
 
-
-## Next 3 for loops remove entries that are not CO-CO WD binaries or fit Z = 0.01 conditions
-
+## Removes entries that are not CO-CO WD binaries
 
 xList = [] #Index of entries to be removed
 
@@ -43,144 +43,108 @@ for x in range(len(dataset)):
 
 dataset = np.delete(dataset, xList, axis = 0)
 
-datasetMin, datasetMax = dataset, dataset # initialize the two differing datasets
-
-
-xList = [] 
-for x in range(len(datasetMin)):    
-    #Removes entry if first or second WD is not in 0.52 - 0.93 mass range
-    
-    if datasetMin[(x,3)] < 0.52 or datasetMin[(x,3)] > 0.94:
-        xList.append(x)
-        
-    elif datasetMin[(x,4)] < 0.52 or datasetMin[(x,3)] > 0.94:
-        xList.append(x)
-
-datasetMin = np.delete(datasetMin, xList, axis = 0)
-
-
-xList = [] 
-for x in range(len(datasetMax)):    
-    #Removes entry if first or second WD is not in 0.52 - 0.93 mass range
-    
-    if datasetMax[(x,3)] < 0.52 or datasetMax[(x,3)] > 0.93:
-        xList.append(x)
-        
-    elif datasetMax[(x,4)] < 0.52 or datasetMax[(x,3)] > 0.93:
-        xList.append(x)
-
-
-datasetMax = np.delete(datasetMax, xList, axis = 0)
-
-#### Next two for loops could be remade as one function called twice: MBuff(arrayName, a, b, c)
-
-# Finds buffer mass min, stores in list MBuffMin with system ID
-
-MBuffMin = np.zeros((1,3))
-for x in range(len(datasetMin)):
-    a = -3.3243
-    b = -6.7603
-    c = -3.0043
-    
-    Mass1 = datasetMin[(x,3)]
-    Mass2 = datasetMin[(x,4)]
-    
-    
-    MBuffMin1 = 10**(a + b*np.log10(Mass1) + c*(np.log10(Mass1)**2))
-    MBuffMin2 = 10**(a + b*np.log10(Mass2) + c*(np.log10(Mass2)**2))
-    
-    MBuffMin = np.concatenate((MBuffMin, [[datasetMin[(x,0)], MBuffMin1, MBuffMin2]]))
-    
-MBuffMin = np.delete(MBuffMin, 0, axis = 0)
 
 
 
-
-# Finds buffer mass max, stores in list MBuffMax with system ID
-
-MBuffMax = np.zeros((1,3))
-
-for x in range(len(datasetMax)):
-    a = -2.9129
-    b = -6.1056
-    c = -5.0948
-    
-    Mass1 = datasetMax[(x,3)]
-    Mass2 = datasetMax[(x,4)]
-    
-    MBuffMax1 = 10**(a + b*np.log10(Mass1) + c*(np.log10(Mass1)**2))
-    MBuffMax2 = 10**(a + b*np.log10(Mass2) + c*(np.log10(Mass2)**2))
-    
-    MBuffMax = np.concatenate((MBuffMax, [[datasetMax[(x,0)], MBuffMax1, MBuffMax2]]))
-    
-MBuffMax = np.delete(MBuffMax, 0, axis = 0)
-
-
-
-
-## Finds entries that have either a max or min buffer mass
-## However, it is very slow since it uses +-nested for loops
-xList = []
-aList = []
-
-for x in range(len(dataset)): 
-    print(x/len(dataset))
-    xList.append(x)
-    if x <= len(MBuffMin) or x <= len(MBuffMax):
-        for i in range(len(MBuffMin)):
-            if dataset[x,0] == MBuffMin[i,0]:
-                aList.append(i)
-                break
-         
-        for i in range(len(MBuffMax)):
-             if dataset[x,0] == MBuffMax[i,0]:
-                 aList.append(i)
-                 break
-      
-        
-
-aList = list(OrderedDict.fromkeys(aList))
-
-
-
-
-
-
-
-#Conversion to Pandas DataFrames
+## Conversion to Pandas DataFrames, done to allow '-' to be inputed where a system has a min buffer mass but no max buffer mass
 
 pdDataset = pd.DataFrame(dataset, columns = ['id', 'DWD_formation_time(Myr)', 
                                              'time_of_merger(Myr)', 'Mwd1(Msun)', 
                                              'Mwd2(Msun)', 'type_wd1', 'type_wd2' ])
-
-pdMBuffMin = pd.DataFrame(MBuffMin, columns = ['id', 'min_He_wd1', 'min_He_wd2' ] )
-
-pdMBuffMax = pd.DataFrame(MBuffMax, columns = ['id', 'max_He_wd1', 'max_He_wd2' ] )
-
-
-
+# Initalize new columns for calculated data
+pdDataset['He_min_wd1(Msun)'] = 0
+pdDataset['He_min_wd2(Msun)'] = 0
+pdDataset['He_max_wd1(Msun)'] = 0
+pdDataset['He_max_wd2(Msun)'] = 0
 
 
-
-# # Remove entries that have no calculated min nor max buffer mass
-# xList = []
-# for x in range(len(pdDataset)):
-#     try:
-#         if pdDataset.iat[x,0] != pdMBuffMin.iat[x,0] and pdDataset.iat[x,0] != pdMBuffMax.iat[x,0]:
-#             xList.append(x)
-#     except:
-#         xList.append(x)
-
-# pdDataset.drop(xList)
+## Function to find the buffer mass given WD mass and variables from Table 6
+## (see https://articles.adsabs.harvard.edu/pdf/2006MNRAS.371..263L)
+## Mass assumed to be given in solar masses
 
 
+def MBuff(mass, a, b, c, d, e):
+    
+    if mass < d or mass > e: #Writes '-' if the mass is not within the acccepted range
+        MBuff = '-'   
+        
+    else:
+        MBuff = 10**(a + b*np.log10(mass) + c*(np.log10(mass)**2)) # Equation 9
+        
+    return MBuff
 
 
+# MBuff var min (z=0.01)
+# a = -3.3243
+# b = -6.7603
+# c = -3.0043
+# d = 0.52
+# e = 0.94
+    
+# MBuff var max (z=0.01)
+# a = -2.9129
+# b = -6.1056
+# c = -5.0948
+# d = 0.52
+# e = 0.93  
+
+## Uses MBuff to assign buffer mass values in pdDataset 
+## Assumes Z = 0.01
 
 
+def assignMass(df):
+    
+    for x in range(len(df)):
+        row = x
+        
+        ## MBuff min 
+        a = -3.3243
+        b = -6.7603
+        c = -3.0043
+        d = 0.52
+        e = 0.94
+        mass = df.iat[row, 3] #WD 1
+        df.iat[row, 7] = MBuff(mass, a, b, c, d, e)
+    
+        mass = df.iat[row, 4] #WD 2
+        df.iat[row, 8] = MBuff(mass, a, b, c, d, e)
+    
+        ## MBuff max 
+        a = -2.9129
+        b = -6.1056
+        c = -5.0948
+        d = 0.52
+        e = 0.93 
+    
+        mass = df.iat[row, 3] #WD 1
+        df.iat[row, 9] = MBuff(mass, a, b, c, d, e)
+    
+        mass = df.iat[row, 4] #WD 2
+        df.iat[row, 10] = MBuff(mass, a, b, c, d, e)
+
+    return df
 
 
+## Remove entries that have no He mass attributed
 
+def removeNull(df):
+    xList = []
+    for x in range(len(df)):
+        row = x
+        if (df.iat[row, 7] == '-' and
+            df.iat[row, 8] == '-' and
+            df.iat[row, 9] == '-' and
+            df.iat[row, 10] == '-'):
+                xList.append(x)
+                
+    df = df.drop(xList)
+    
+    return df
 
+pdDataset = assignMass(pdDataset)
+pdDataset = removeNull(pdDataset)
 
+with open('./' + fileName, 'x') as f:
+    dfAsString = pdDataset.to_string(header=True, index=False)
+    f.write(dfAsString)
 
