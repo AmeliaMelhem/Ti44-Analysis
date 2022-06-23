@@ -119,7 +119,7 @@ MBuffMax = np.delete(MBuffMax, 0, axis = 0)
 
 
 ## Finds entries that have either a max or min buffer mass
-## However, it is very slow since it uses nested for loops
+## However, it is very slow since it uses +-nested for loops
 xList = []
 aList = []
 
