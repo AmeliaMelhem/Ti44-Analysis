@@ -12,6 +12,8 @@ Created on Wed Jun 15 15:22:20 2022
 ## Mass range is different for buffer mass max and min, *
 
 import numpy as np
+import pandas as pd
+from collections import OrderedDict 
 
 x = 0 # 0 for first file, 1 for second
 
@@ -70,7 +72,7 @@ for x in range(len(datasetMax)):
 
 datasetMax = np.delete(datasetMax, xList, axis = 0)
 
-
+#### Next two for loops could be remade as one function called twice: MBuff(arrayName, a, b, c)
 
 # Finds buffer mass min, stores in list MBuffMin with system ID
 
@@ -112,6 +114,69 @@ for x in range(len(datasetMax)):
     MBuffMax = np.concatenate((MBuffMax, [[datasetMax[(x,0)], MBuffMax1, MBuffMax2]]))
     
 MBuffMax = np.delete(MBuffMax, 0, axis = 0)
+
+
+
+
+## Finds entries that have either a max or min buffer mass
+## However, it is very slow since it uses nested for loops
+xList = []
+aList = []
+
+for x in range(len(dataset)): 
+    print(x/len(dataset))
+    xList.append(x)
+    if x <= len(MBuffMin) or x <= len(MBuffMax):
+        for i in range(len(MBuffMin)):
+            if dataset[x,0] == MBuffMin[i,0]:
+                aList.append(i)
+                break
+         
+        for i in range(len(MBuffMax)):
+             if dataset[x,0] == MBuffMax[i,0]:
+                 aList.append(i)
+                 break
+      
+        
+
+aList = list(OrderedDict.fromkeys(aList))
+
+
+
+
+
+
+
+#Conversion to Pandas DataFrames
+
+pdDataset = pd.DataFrame(dataset, columns = ['id', 'DWD_formation_time(Myr)', 
+                                             'time_of_merger(Myr)', 'Mwd1(Msun)', 
+                                             'Mwd2(Msun)', 'type_wd1', 'type_wd2' ])
+
+pdMBuffMin = pd.DataFrame(MBuffMin, columns = ['id', 'min_He_wd1', 'min_He_wd2' ] )
+
+pdMBuffMax = pd.DataFrame(MBuffMax, columns = ['id', 'max_He_wd1', 'max_He_wd2' ] )
+
+
+
+
+
+
+# # Remove entries that have no calculated min nor max buffer mass
+# xList = []
+# for x in range(len(pdDataset)):
+#     try:
+#         if pdDataset.iat[x,0] != pdMBuffMin.iat[x,0] and pdDataset.iat[x,0] != pdMBuffMax.iat[x,0]:
+#             xList.append(x)
+#     except:
+#         xList.append(x)
+
+# pdDataset.drop(xList)
+
+
+
+
+
 
 
 
