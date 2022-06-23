@@ -17,7 +17,7 @@ import pandas as pd
 
 file = 0 # 0 for first file, 1 for second
 
-if file == 1:
+if file == 0:
     dataset = np.loadtxt("./SeBa_aa_020418_production_run_wdwd_bob.data")
     fileName = 'SeBa_aa_with_He.txt'
 else: 
@@ -131,9 +131,9 @@ def removeNull(df):
     xList = []
     for x in range(len(df)):
         row = x
-        if (df.iat[row, 7] == '-' and
-            df.iat[row, 8] == '-' and
-            df.iat[row, 9] == '-' and
+        if (df.iat[row, 7] == '-' and # change all 'and' to 'or' to only
+            df.iat[row, 8] == '-' and # store information when all 4 buffer
+            df.iat[row, 9] == '-' and # masses can be found
             df.iat[row, 10] == '-'):
                 xList.append(x)
                 
@@ -143,6 +143,9 @@ def removeNull(df):
 
 pdDataset = assignMass(pdDataset)
 pdDataset = removeNull(pdDataset)
+
+# Save as new txt file. Change header to False to be numpy compatible or add
+# '#' to the front of the first line of txt.
 
 with open('./' + fileName, 'x') as f:
     dfAsString = pdDataset.to_string(header=True, index=False)
