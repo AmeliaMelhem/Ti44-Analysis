@@ -132,7 +132,34 @@ pdDataset = removeNull(pdDataset)
 # Save as new txt file. Change header to False to be numpy compatible or add
 # '#' to the front of the first line of txt.
 
-with open('./' + fileName, 'w') as f:
-    dfAsString = pdDataset.to_string(header=True, index=False)
-    f.write(dfAsString)
+# with open('./' + fileName, 'w') as f:
+#     dfAsString = pdDataset.to_string(header=True, index=False)
+#     f.write(dfAsString)
+
+
+
+
+## Plot the data and check against Figure 9
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
