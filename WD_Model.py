@@ -6,7 +6,8 @@ Created on Wed Jun 15 15:22:20 2022
 @authors: Amelia Melhem and Alexis Petty
 """
 
-###
+### Finds estimated He mass in WD given total mass using
+### https://articles.adsabs.harvard.edu/pdf/2006MNRAS.371..263L
 
 ## Assumes Z = 0.01 and that WD core mass is equal to total mass
 ## Also assumes that the buffer mass of the He is equal to the total He mass
@@ -59,7 +60,6 @@ pdDataset['He_max_wd2(Msun)'] = 0
 
 
 ## Function to find the buffer mass given WD mass and variables from Table 6
-## (see https://articles.adsabs.harvard.edu/pdf/2006MNRAS.371..263L)
 ## Mass assumed to be given in solar masses
 
 
@@ -147,7 +147,7 @@ pdDataset = removeNull(pdDataset)
 # Save as new txt file. Change header to False to be numpy compatible or add
 # '#' to the front of the first line of txt.
 
-with open('./' + fileName, 'x') as f:
+with open('./' + fileName, 'w') as f:
     dfAsString = pdDataset.to_string(header=True, index=False)
     f.write(dfAsString)
 
