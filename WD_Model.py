@@ -74,23 +74,8 @@ def MBuff(mass, a, b, c, d, e):
     return MBuff
 
 
-# MBuff var min (z=0.01)
-# a = -3.3243
-# b = -6.7603
-# c = -3.0043
-# d = 0.52
-# e = 0.94
-    
-# MBuff var max (z=0.01)
-# a = -2.9129
-# b = -6.1056
-# c = -5.0948
-# d = 0.52
-# e = 0.93  
-
 ## Uses MBuff to assign buffer mass values in pdDataset 
 ## Assumes Z = 0.01
-
 
 def assignMass(df):
     
