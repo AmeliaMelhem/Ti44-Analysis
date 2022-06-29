@@ -13,9 +13,9 @@ import numpy as np
 
 
 
-file = 0 # 0 for first file(aa), 1 for second(ag)
+file = 1 # 0 for first file(aa), 1 for second(ag)
 
-if file == 0:
+if file == 1:
     data = np.loadtxt("./noDashSeBa_aa_with_He.txt")    
     fileName = 'Mass_Comparison_aa'
 else: 
@@ -45,6 +45,6 @@ plt.legend(['W1min','W1max', 'W2min', 'W2max'])
 plt.ylabel('He-Mass')
 plt.xlabel('WD-Mass')
 
-#plt.savefig(filename)
+plt.savefig(fileName)
 
 plt.show()
