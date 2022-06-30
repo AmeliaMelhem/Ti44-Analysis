@@ -16,7 +16,7 @@ Created on Wed Jun 15 15:22:20 2022
 import numpy as np
 import pandas as pd
 
-file = 0 # 0 for first file, 1 for second
+file = 1 # 0 for first file(aa), 1 for second(ag)
 
 if file == 0:
     dataset = np.loadtxt("./SeBa_aa_020418_production_run_wdwd_bob.data")
