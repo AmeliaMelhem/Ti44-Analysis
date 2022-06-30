@@ -139,9 +139,6 @@ pdDataset = removeNull(pdDataset)
 
 
 
-## Plot the data and check against Figure 9
-
-
 
 
 
