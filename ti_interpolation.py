@@ -32,34 +32,36 @@ cd_ti = (data[:,3])
 
 
 
-#Creates a least squares fit [I swapped Ti and He since we are looking for Ti - AM]
+#Creates a least squares fit 
+#[I swapped Ti and He since we are looking for Ti - AM]
+#[Also note: the values for the linspace should be changed to be automatically found from the file -AM]
 hd_fit = np.polyfit(hd_he, hd_ti, 1)
-hd_he_model = np.linspace(-4, -2.5, 10) 
+hd_he_model = np.linspace(0, 0.05, 10) 
 hd_ti_model = hd_fit[1] + hd_fit[0]*hd_he_model
 
 cd_fit = np.polyfit(cd_he, cd_ti, 1)
-cd_he_model = np.linspace(-5, -4.7, 10)
+cd_he_model = np.linspace(0, 0.01, 10)
 cd_ti_model = cd_fit[1] + cd_fit[0]*cd_he_model
 
 
 
 #Plots data from paper
-#plt.scatter(hd_he, hd_ti, color = 'red', label = 'Helium Detonation Data') 
-#plt.scatter(cd_he, cd_ti, color = 'blue', label = 'Core Detonation Data')
+# plt.scatter(hd_he, hd_ti, color = 'red', label = 'Helium Detonation Data') 
+# plt.scatter(cd_he, cd_ti, color = 'blue', label = 'Core Detonation Data')
 
 
-#Plots least squares fit [These are no longer agreeing with the data, I think I made a mistake somewhere -AM]
-#plt.plot(hd_he_model, hd_ti_model, color = 'red', label = 'He Detonation Model')
-#plt.plot(cd_he_model, cd_ti_model, color = 'blue', label = 'Core Detonation Model')
+#Plots least squares fit
+# plt.plot(hd_he_model, hd_ti_model, color = 'red', label = 'He Detonation Model')
+# plt.plot(cd_he_model, cd_ti_model, color = 'blue', label = 'Core Detonation Model')
 
 
-plt.title('Final Abundances of Ti against He for Various Core and Shell Masses')
-plt.xlabel('Mass Ti-44 (Msun)')
-plt.ylabel('Mass He (Msun)')
-plt.legend() 
+# plt.title('Mass of He vs Ti for Core detonation')
+# plt.xlabel('Mass Ti-44 (Msun)')
+# plt.ylabel('Mass He (Msun)')
+# plt.legend() 
 
-# plt.savefig("CDti_interpolation")
-plt.show() 
+# plt.savefig("CD_linear_approx")
+# plt.show() 
 
 
 
