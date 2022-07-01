@@ -44,22 +44,22 @@ cd_ti_model = cd_fit[1] + cd_fit[0]*cd_he_model
 
 
 #Plots data from paper
-plt.scatter(hd_he, hd_ti, color = 'red', label = 'Helium Detonation Data') 
-plt.scatter(cd_he, cd_ti, color = 'blue', label = 'Core Detonation Data')
+#plt.scatter(hd_he, hd_ti, color = 'red', label = 'Helium Detonation Data') 
+#plt.scatter(cd_he, cd_ti, color = 'blue', label = 'Core Detonation Data')
 
 
-#Plots least squares fit
-# plt.plot(hd_ti_model, hd_he_model, color = 'red', label = 'He Detonation Model')
-# plt.plot(cd_ti_model, cd_he_model, color = 'blue', label = 'Core Detonation Model')
+#Plots least squares fit [These are no longer agreeing with the data, I think I made a mistake somewhere -AM]
+#plt.plot(hd_he_model, hd_ti_model, color = 'red', label = 'He Detonation Model')
+#plt.plot(cd_he_model, cd_ti_model, color = 'blue', label = 'Core Detonation Model')
 
 
 plt.title('Final Abundances of Ti against He for Various Core and Shell Masses')
-plt.xlabel('Log Ti-44 (Msun)')
-plt.ylabel('Log He (Msun)')
+plt.xlabel('Mass Ti-44 (Msun)')
+plt.ylabel('Mass He (Msun)')
 plt.legend() 
 
-# plt.savefig("HDti_interpolation")
-# plt.show() 
+# plt.savefig("CDti_interpolation")
+plt.show() 
 
 
 
