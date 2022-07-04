@@ -12,7 +12,8 @@ import pandas as pd
 
 file = 1 # 0 for first file(aa), 1 for second(ag)
 
-data = np.loadtxt('./Ti_from_He.txt', skiprows = 1, usecols=(1, 2, 3, 4))
+data = np.loadtxt('./Ti_He_Gronow.txt', skiprows = 1, usecols=(1, 2, 3, 4))
+# I changed the filename to be more descriptive - JG
 
 if file == 0:
     df = pd.read_csv('./SeBa_aa_with_He.txt', delim_whitespace=True, index_col=False)
@@ -35,12 +36,14 @@ cd_ti = (data[:,3])
 #Creates a least squares fit 
 #[I swapped Ti and He since we are looking for Ti - AM]
 #[Also note: the values for the linspace should be changed to be automatically found from the file -AM]
+# Good point! I changed the values for linspace to be automatically found from the file by using amin/amax -JG
+
 hd_fit = np.polyfit(hd_he, hd_ti, 1)
-hd_he_model = np.linspace(0, 0.05, 10) 
+hd_he_model = np.linspace(np.amin(hd_he), np.amax(hd_he), 10) 
 hd_ti_model = hd_fit[1] + hd_fit[0]*hd_he_model
 
 cd_fit = np.polyfit(cd_he, cd_ti, 1)
-cd_he_model = np.linspace(0, 0.01, 10)
+cd_he_model = np.linspace(np.amin(cd_he), np.amax(cd_he), 10)
 cd_ti_model = cd_fit[1] + cd_fit[0]*cd_he_model
 
 
