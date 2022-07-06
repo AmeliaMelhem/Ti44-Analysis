@@ -1,9 +1,19 @@
 """
 Created on Thursday June 30
 @authors: John Gallagher
-Using data from the Gronow et al paper located at tables 3, 4, 5, 6 to interpolate a relation between final abundances of He and Ti^44
+Using data from the Gronow et al paper located at tables 3, 4, 5, 6 to 
+interpolate a relation between final abundances of He and Ti^44
 Found at https://doi.org/10.1051/0004-6361/202039954
 """ 
+
+# R-Squared values for the various fits:
+# Gronow not logged:
+# HD: 0.389223216, CD: 0.595582972
+# Gronow logged:
+# HD: 0.4173998675, CD: 0.638657051
+# Leung not logged: 0.469021872
+# Leung logged: 0.350830245
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,7 +34,7 @@ else:
 
 
 
-#Pulls He and Ti masses for det type [I removed the np.log10() -AM]
+#Pulls He and Ti masses for det type. Also, I removed the np.log10 -AM
 hd_he = (data[:,0])
 hd_ti = (data[:,1])
 
@@ -34,8 +44,8 @@ cd_ti = (data[:,3])
 
 
 #Creates a least squares fit 
-#[I swapped Ti and He since we are looking for Ti - AM]
-#[Also note: the values for the linspace should be changed to be automatically found from the file -AM]
+#I swapped Ti and He since we are looking for Ti - AM
+#Also note: the values for the linspace should be changed to be automatically found from the file -AM
 # Good point! I changed the values for linspace to be automatically found from the file by using amin/amax -JG
 
 hd_fit = np.polyfit(hd_he, hd_ti, 1)
@@ -49,22 +59,27 @@ cd_ti_model = cd_fit[1] + cd_fit[0]*cd_he_model
 
 
 #Plots data from paper
-# plt.scatter(hd_he, hd_ti, color = 'red', label = 'Helium Detonation Data') 
-# plt.scatter(cd_he, cd_ti, color = 'blue', label = 'Core Detonation Data')
+plt.scatter(hd_he, hd_ti, color = 'red', label = 'Helium Detonation Data') 
+plt.scatter(cd_he, cd_ti, color = 'blue', label = 'Core Detonation Data')
 
 
 #Plots least squares fit
-# plt.plot(hd_he_model, hd_ti_model, color = 'red', label = 'He Detonation Model')
-# plt.plot(cd_he_model, cd_ti_model, color = 'blue', label = 'Core Detonation Model')
+plt.plot(hd_he_model, hd_ti_model, color = 'red', label = 'He Detonation Model') 
+plt.plot(cd_he_model, cd_ti_model, color = 'blue', label = 'Core Detonation Model')
 
 
-# plt.title('Mass of He vs Ti for Core detonation')
-# plt.xlabel('Mass Ti-44 (Msun)')
-# plt.ylabel('Mass He (Msun)')
-# plt.legend() 
+plt.title('Mass of He vs Ti for Core detonation')
+plt.xlabel('Mass Ti-44 (Msun)')
+plt.ylabel('Mass He (Msun)')
+plt.legend() 
 
 # plt.savefig("CD_linear_approx")
-# plt.show() 
+plt.show() 
+
+
+
+
+
 
 
 
