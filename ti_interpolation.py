@@ -20,9 +20,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-file = 1 # 0 for first file(aa), 1 for second(ag)
+# Idea for future Amy: have both files be found at once instead of needing to run the code twice
+file = 0 # 0 for first file(aa), 1 for second(ag)
 
-data = np.loadtxt('./Ti_He_Gronow.txt', skiprows = 1, usecols=(1, 2, 3, 4))
+
+LeungData = np.loadtxt('Ti_He_Leung_T13.txt', usecols=(1, 2, 3, 4, 5, 6, 7))
+GronowData = np.loadtxt('./Ti_He_Gronow.txt', skiprows = 1, usecols=(1, 2, 3, 4))
 # I changed the filename to be more descriptive - JG
 
 if file == 0:
@@ -35,12 +38,14 @@ else:
 
 
 #Pulls He and Ti masses for det type. Also, I removed the np.log10 -AM
-hd_he = (data[:,0])
-hd_ti = (data[:,1])
+hd_he = np.log10(GronowData[:,0])
+hd_ti = np.log10(GronowData[:,1])
 
-cd_he = (data[:,2])
-cd_ti = (data[:,3])
+cd_he = np.log10(GronowData[:,2])
+cd_ti = np.log10(GronowData[:,3])
 
+leung_he = np.log10(LeungData[1,:])
+leung_ti = np.log10(LeungData[2,:])
 
 
 #Creates a least squares fit 
@@ -49,50 +54,59 @@ cd_ti = (data[:,3])
 # Good point! I changed the values for linspace to be automatically found from the file by using amin/amax -JG
 
 hd_fit = np.polyfit(hd_he, hd_ti, 1)
-hd_he_model = np.linspace(np.amin(hd_he), np.amax(hd_he), 10) 
+hd_he_model = np.linspace(np.amin(hd_he+hd_he*0.15), np.amax(hd_he-hd_he*0.15), 10) 
 hd_ti_model = hd_fit[1] + hd_fit[0]*hd_he_model
 
 cd_fit = np.polyfit(cd_he, cd_ti, 1)
-cd_he_model = np.linspace(np.amin(cd_he), np.amax(cd_he), 10)
+cd_he_model = np.linspace(np.amin(cd_he+cd_he*0.15), np.amax(cd_he-cd_he*0.15), 10)
 cd_ti_model = cd_fit[1] + cd_fit[0]*cd_he_model
+
+leung_fit = np.polyfit(leung_he, leung_ti, 1)
+leung_he_model = np.linspace(np.amin(leung_he+leung_he*0.15), np.amax(leung_he-leung_he*0.15), 10)
+leung_ti_model = leung_fit[1] + leung_fit[0]*leung_he_model
+
 
 
 
 #Plots data from paper
-plt.scatter(hd_he, hd_ti, color = 'red', label = 'Helium Detonation Data') 
-plt.scatter(cd_he, cd_ti, color = 'blue', label = 'Core Detonation Data')
+plt.scatter(hd_he, hd_ti, color = 'red', label = 'Gronow He Detonation Data') 
+plt.scatter(cd_he, cd_ti, color = 'blue', label = 'Gronow Core Detonation Data')
+plt.scatter(leung_he, leung_ti, color = 'green', label = 'Leung Data')
 
 
 #Plots least squares fit
 plt.plot(hd_he_model, hd_ti_model, color = 'red', label = 'He Detonation Model') 
 plt.plot(cd_he_model, cd_ti_model, color = 'blue', label = 'Core Detonation Model')
+plt.plot(leung_he_model, leung_ti_model, color = 'green', label = 'Leung Model')
 
 
-plt.title('Mass of He vs Ti for Core detonation')
-plt.xlabel('Mass Ti-44 (Msun)')
-plt.ylabel('Mass He (Msun)')
+plt.title('Mass of He vs Ti at detonation')
+plt.ylabel('Mass Ti-44 (Log10 Msun)')
+plt.xlabel('Mass He (Log10 Msun)')
 plt.legend() 
 
-# plt.savefig("CD_linear_approx")
+#plt.savefig("Ti_linear_interp_model")
 plt.show() 
 
 
 
 
 
-
-
-
 #Initialize new columns for new data
-df['He_Det_Ti_min_wd1(Msun)'] = 0
-df['He_Det_Ti_min_wd2(Msun)'] = 0
-df['He_Det_Ti_max_wd1(Msun)'] = 0
-df['He_Det_Ti_max_wd2(Msun)'] = 0
+df['He_Det_Ti_min_wd1(Log10 Msun)'] = 0
+df['He_Det_Ti_min_wd2(Log10 Msun)'] = 0
+df['He_Det_Ti_max_wd1(Log10 Msun)'] = 0
+df['He_Det_Ti_max_wd2(Log10 Msun)'] = 0
 
-df['Core_Det_Ti_min_wd1(Msun)'] = 0
-df['Core_Det_Ti_min_wd2(Msun)'] = 0
-df['Core_Det_Ti_max_wd1(Msun)'] = 0
-df['Core_Det_Ti_max_wd2(Msun)'] = 0
+df['Core_Det_Ti_min_wd1(Log10 Msun)'] = 0
+df['Core_Det_Ti_min_wd2(Log10 Msun)'] = 0
+df['Core_Det_Ti_max_wd1(Log10 Msun)'] = 0
+df['Core_Det_Ti_max_wd2(Log10 Msun)'] = 0
+
+df['Leung_Ti_min_wd1(Log10 Msun)'] = 0
+df['Leung_Ti_min_wd2(Log10 Msun)'] = 0
+df['Leung_Ti_max_wd1(Log10 Msun)'] = 0
+df['Leung_Ti_max_wd2(Log10 Msun)'] = 0
 
 
 
@@ -159,17 +173,36 @@ def assignMass(df):
     
         HeMass = df.iat[row, 10] #WD 2 max
         df.iat[row, 18] = TiMass(HeMass, a, b)
+        
+        
+        ## Leung data
+        a = leung_fit[0]
+        b = leung_fit[1]
+
+        HeMass = df.iat[row, 7] #WD 1 min
+        df.iat[row, 19] = TiMass(HeMass, a, b)
+    
+        HeMass = df.iat[row, 8] #WD 2 min
+        df.iat[row, 20] = TiMass(HeMass, a, b)
+
+        HeMass = df.iat[row, 9] #WD 1 max
+        df.iat[row, 21] = TiMass(HeMass, a, b)
+    
+        HeMass = df.iat[row, 10] #WD 2 max
+        df.iat[row, 22] = TiMass(HeMass, a, b)        
+        
+        
     return df
 
 
-df = assignMass(df)
+# df = assignMass(df)
 
 # Save as new txt file. Change header to False to be numpy compatible or add
 # '#' to the front of the first line of txt.
 
-with open('./' + fileName, 'w') as f:
-    dfAsString = df.to_string(header=True, index=False)
-    f.write(dfAsString)
+# with open('./' + fileName, 'w') as f:
+#     dfAsString = df.to_string(header=True, index=False)
+#     f.write(dfAsString)
 
 
 
