@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import interp2d 
 
 
-gronow_data = np.loadtxt('Ti_He_Gronow.txt', skiprows=1, usecols= (1,2,5)) 
-leung_data = np.loadtxt('Ti_He_Leung_T13.txt', usecols = (1,2,3,4,5,6,7))
+gronow_data = np.loadtxt('../Input Data/Ti_He_Gronow.txt', skiprows=1, usecols= (1,2,5)) 
+leung_data = np.loadtxt('../Input Data/Ti_He_Leung_T13.txt', usecols = (1,2,3,4,5,6,7))
 
 
 he_data = gronow_data[:,0] 

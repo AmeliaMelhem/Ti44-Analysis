@@ -19,10 +19,10 @@ import pandas as pd
 file = 1 # 0 for first file(aa), 1 for second(ag)
 
 if file == 0:
-    dataset = np.loadtxt("./SeBa_aa_020418_production_run_wdwd_bob.data")
+    dataset = np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data")
     fileName = 'SeBa_aa_with_He.txt'
 else: 
-    dataset = dataset = np.loadtxt("./SeBa_ag_020418_production_run_wdwd_bob.data")
+    dataset = dataset = np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data")
     fileName = 'SeBa_ag_with_He.txt'
 
 
@@ -63,7 +63,24 @@ pdDataset['He_max_wd2(Msun)'] = 0
 ## Mass assumed to be given in solar masses
 
 
-def MBuff(mass, a, b, c, d, e):
+def MBuff(mass, a, b, c, d, e): # Too specific to be generalized -AM
+    """
+    Uses Equation 9 to estimate He Mass given the WD mass and parameters
+    
+    Parameters
+    ----------
+    mass : Core Mass of the WD
+    a, b, c : Given by the table
+    d, e : Min and Max allowed input WD masses. returns '-' if the input is 
+    outside this range
+
+    Returns
+    -------
+    MBuff : The estimated He Mass
+
+    """
+    
+    
     
     if mass < d or mass > e: #Writes '-' if the mass is not within the acccepted range
         MBuff = '-'   
@@ -77,7 +94,7 @@ def MBuff(mass, a, b, c, d, e):
 ## Uses MBuff to assign buffer mass values in pdDataset 
 ## Assumes Z = 0.01
 
-def assignMass(df):
+def assignMass(df): # Planned to be generalized at some point
     
     for x in range(len(df)):
         row = x
@@ -112,7 +129,7 @@ def assignMass(df):
 
 ## Remove entries that have no He mass attributed
 
-def removeNull(df):
+def removeNull(df): # Could be generalized if useful but probably not -AM
     xList = []
     for x in range(len(df)):
         row = x
