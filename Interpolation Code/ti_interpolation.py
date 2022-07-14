@@ -18,21 +18,21 @@ Found at https://doi.org/10.1051/0004-6361/202039954
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-
+from interpFunctions import linearInterp
 
 # Idea for future Amy: have both files be found at once instead of needing to run the code twice
 file = 0 # 0 for first file(aa), 1 for second(ag)
 
 
-LeungData = np.loadtxt('Ti_He_Leung_T13.txt', usecols=(1, 2, 3, 4, 5, 6, 7))
-GronowData = np.loadtxt('./Ti_He_Gronow.txt', skiprows = 1, usecols=(1, 2, 3, 4))
+LeungData = np.loadtxt('../Input Data/Ti_He_Leung_T13.txt', usecols=(1, 2, 3, 4, 5, 6, 7))
+GronowData = np.loadtxt('../Input Data/Ti_He_Gronow.txt', skiprows = 1, usecols=(1, 2, 3, 4))
 # I changed the filename to be more descriptive - JG
 
 if file == 0:
-    df = pd.read_csv('./SeBa_aa_with_He.txt', delim_whitespace=True, index_col=False)
+    df = pd.read_csv('../Output Data/SeBa_aa_with_He.txt', delim_whitespace=True, index_col=False)
     fileName = 'SeBa_aa_Ti_interp.txt'
 else: 
-    df = pd.read_csv('./SeBa_ag_with_He.txt', delim_whitespace=True, index_col=False)
+    df = pd.read_csv('../Output Data/SeBa_ag_with_He.txt', delim_whitespace=True, index_col=False)
     fileName = 'SeBa_ag_Ti_interp.txt'
 
 
@@ -110,33 +110,8 @@ df['Leung_Ti_max_wd2(Log10 Msun)'] = 0
 
 
 
-def TiMass(HeMass, a, b):
-    '''
-    Parameters
-    ----------
-    HeMass : float
-        Mass of the helium
-    a : float
-        First coeffient(for highest power term).
-    b : float
-        Last coeffient(for 0th power term).
 
-    Returns
-    -------
-    TiMass: float or string
-        Returns estimated mass for Ti. Assigned as '-' if no applicable mass.
-    '''
-    
-    if HeMass == '-': #Writes '-' if the mass is not applicable
-        TiMass = '-'   
-        
-    else:
-        TiMass = a*float(HeMass) + b # Lin Interp
-        
-    return TiMass
-
-
-def assignMass(df):
+def assignMass(df): # Should be replaced with a function being called three times
     
     for x in range(len(df)):
         row = x
@@ -146,16 +121,16 @@ def assignMass(df):
         b = hd_fit[1]
 
         HeMass = df.iat[row, 7] #WD 1 min
-        df.iat[row, 11] = TiMass(HeMass, a, b)
+        df.iat[row, 11] = linearInterp(HeMass, a, b)
 
         HeMass = df.iat[row, 8] #WD 2 min
-        df.iat[row, 12] = TiMass(HeMass, a, b)
+        df.iat[row, 12] = linearInterp(HeMass, a, b)
 
         HeMass = df.iat[row, 9] #WD 1 max
-        df.iat[row, 13] = TiMass(HeMass, a, b)
+        df.iat[row, 13] = linearInterp(HeMass, a, b)
     
         HeMass = df.iat[row, 10] #WD 2 max
-        df.iat[row, 14] = TiMass(HeMass, a, b)
+        df.iat[row, 14] = linearInterp(HeMass, a, b)
 
 
         ## Core det
@@ -163,16 +138,16 @@ def assignMass(df):
         b = cd_fit[1]
 
         HeMass = df.iat[row, 7] #WD 1 min
-        df.iat[row, 15] = TiMass(HeMass, a, b)
+        df.iat[row, 15] = linearInterp(HeMass, a, b)
     
         HeMass = df.iat[row, 8] #WD 2 min
-        df.iat[row, 16] = TiMass(HeMass, a, b)
+        df.iat[row, 16] = linearInterp(HeMass, a, b)
 
         HeMass = df.iat[row, 9] #WD 1 max
-        df.iat[row, 17] = TiMass(HeMass, a, b)
+        df.iat[row, 17] = linearInterp(HeMass, a, b)
     
         HeMass = df.iat[row, 10] #WD 2 max
-        df.iat[row, 18] = TiMass(HeMass, a, b)
+        df.iat[row, 18] = linearInterp(HeMass, a, b)
         
         
         ## Leung data
@@ -180,16 +155,16 @@ def assignMass(df):
         b = leung_fit[1]
 
         HeMass = df.iat[row, 7] #WD 1 min
-        df.iat[row, 19] = TiMass(HeMass, a, b)
+        df.iat[row, 19] = linearInterp(HeMass, a, b)
     
         HeMass = df.iat[row, 8] #WD 2 min
-        df.iat[row, 20] = TiMass(HeMass, a, b)
+        df.iat[row, 20] = linearInterp(HeMass, a, b)
 
         HeMass = df.iat[row, 9] #WD 1 max
-        df.iat[row, 21] = TiMass(HeMass, a, b)
+        df.iat[row, 21] = linearInterp(HeMass, a, b)
     
         HeMass = df.iat[row, 10] #WD 2 max
-        df.iat[row, 22] = TiMass(HeMass, a, b)        
+        df.iat[row, 22] = linearInterp(HeMass, a, b)        
         
         
     return df
