@@ -123,7 +123,14 @@ def steppedLinearInterp(inputXandY, toEstimateX):
             #value is within the input array range        
             if toEstimateX[x] >= sortedXandY[0,i] and toEstimateX[x] <= sortedXandY[0,i+1]:
                 x1, x2 = sortedXandY[0,i], sortedXandY[0,i+1]
-                y1, y2 = sortedXandY[1,i], sortedXandY[1,i+1]
+                
+                # Catch any issues with x1 = x2 to avoid /0 error, commented out bc it hasn't been tested yet
+                repeat = 0
+                # while x1 == x2:
+                #     x2 = sortedXandY[0,i+1+repeat]
+                #     repeat += 1
+                
+                y1, y2 = sortedXandY[1,i], sortedXandY[1,i+1+repeat]
                 y.append(((y2-y1) / (x2-x1))*(toEstimateX[x]-x1) + y1)
                 break
             
