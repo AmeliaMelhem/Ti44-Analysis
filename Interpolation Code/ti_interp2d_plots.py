@@ -9,7 +9,7 @@ using arrays created in fits.py
 
 from ti_interp2d import * 
 
-print("1 - Ti44 x He \n2 - Ti44 x CO \n3 - Ti(He,CO) \n4 - He x CO")
+print("1 - Ti44 x He \n2 - Ti44 x CO \n3 - Ti(He,CO) \n4 - CO x He")
 inp = input() 
 if inp == "1": 
    plt.scatter(he_data, ti_data, color = 'Red', label = 'Data') 
@@ -39,5 +39,8 @@ elif inp == "3":
     plt.ylabel("Core mass / Msun") 
     plt.savefig("../Plots/interp2d_3.png") 
 elif inp == "4": 
-    plt.scatter(co_data, he_data) # mostly just for testing
+    plt.scatter(he_data, co_data) # mostly just for testing
+    plt.title("Sample Values") 
+    plt.xlabel("He mass / Msun") 
+    plt.ylabel("CO mass / Msun") 
 plt.show()

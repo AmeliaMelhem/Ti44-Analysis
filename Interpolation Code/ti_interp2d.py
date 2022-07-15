@@ -95,3 +95,6 @@ print(fetch_err(ti_data, ti_model))
 print("\n") 
 print(np.mean(fetch_err(ti_data, ti_model))) 
 """
+
+def ti_mass(he_mass, co_mass): 
+    return fit_t[fetch_index(co_mass, co_arr), fetch_index(he_mass, he_arr)] 
