@@ -19,6 +19,7 @@ if inp == "1":
    plt.title("Ti44 related to initial He mass") 
    plt.xlabel("He Mass / Msun") 
    plt.ylabel("Ti44 mass / Msun") 
+   plt.legend() 
    plt.savefig("../Plots/interp2d_1.png") 
 elif inp == "2": 
    plt.scatter(co_data, ti_data, color = 'Red', label = 'Data') 
@@ -28,6 +29,7 @@ elif inp == "2":
    plt.title("Ti44 related to initial core mass") 
    plt.xlabel("Core mass / Msun") 
    plt.ylabel("Ti44 mass / Msun") 
+   plt.legend() 
    plt.savefig("../Plots/interp2d_2.png") 
 elif inp == "3": 
     plt.pcolormesh(he_arr, co_arr, fit_f(he_arr, co_arr)) 
@@ -38,5 +40,4 @@ elif inp == "3":
     plt.savefig("../Plots/interp2d_3.png") 
 elif inp == "4": 
     plt.scatter(co_data, he_data) # mostly just for testing
-plt.legend() 
 plt.show()
