@@ -90,3 +90,75 @@ def assignValue(df):
         df.iat[row, 14] = linearInterp(HeMass, a, b)   
                 
     return df
+
+
+def steppedLinearInterp(inputXandY, toEstimateX): 
+    """
+    This function finds the two x values nearest to the data given and creates
+    a linear fit from those two points to find an estimate for the data. This 
+    function only needs to be called once to find all estimated values. 
+
+    Parameters
+    ----------
+    inputXandY : The data to be used to create a stepped linear fit. The data 
+    should be in one numpy array with two rows, with x being the first and 
+    y being the second.
+    toEstimateX : The data to be used to find the estimate.
+
+    Returns
+    -------
+    estimatedY : the output values for each given input x found from the fit
+
+    """
+     
+    #Sorts from low to high x values, keeps logic and optomization easy
+    sortedXandY = inputXandY[ :, inputXandY[0].argsort()] 
+    
+    y = []
+    
+    for x in range(len(toEstimateX)):
+        
+        for i in range(len(sortedXandY[0,:])-1):
+    
+            #value is within the input array range        
+            if toEstimateX[x] >= sortedXandY[0,i] and toEstimateX[x] <= sortedXandY[0,i+1]:
+                x1, x2 = sortedXandY[0,i], sortedXandY[0,i+1]
+                y1, y2 = sortedXandY[1,i], sortedXandY[1,i+1]
+                y.append(((y2-y1) / (x2-x1))*(toEstimateX[x]-x1) + y1)
+                break
+            
+            #value under the input range
+            elif toEstimateX[x] <= sortedXandY[0,0]:
+                x1, x2 = sortedXandY[0,0], sortedXandY[0,1]
+                y1, y2 = sortedXandY[1,0], sortedXandY[1,1]
+                y.append(((y2-y1) / (x2-x1))*(toEstimateX[x]-x1) + y1)
+                break
+                
+            #value over the input range
+            elif toEstimateX[x] >= sortedXandY[0,-1]:
+                x1, x2 = sortedXandY[0,-2], sortedXandY[0,-1]
+                y1, y2 = sortedXandY[1,-2], sortedXandY[1,-1]            
+                y.append(((y2-y1) / (x2-x1))*(toEstimateX[x]-x1) + y1)
+                break  
+    
+    return y
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
