@@ -151,4 +151,39 @@ def nearestNeighborLinearInterp(inputXandY, toEstimateX):
     return y
 
 
+def positronFromTi(tiMass):
+    """
+    Parameters
+    ----------
+    tiMass : A list or 1D array with each value being the mass of Ti44 in
+    solar masses.
+
+    Returns
+    -------
+    positronAmount : A list with the cooresponding number of positrons for each
+    Ti mass.
+    """
+    
+    positronAmount = []
+    for x in range(len(tiMass)):
+        positronAmount.append(tiMass[x]*2.724694722*(10**55))
+    
+    return positronAmount
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
