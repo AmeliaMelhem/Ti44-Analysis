@@ -6,7 +6,7 @@ Created on Fri Jul 15 00:56:16 2022
 @author: amelia
 """
 
-from groupFunctions import steppedLinearInterp
+from groupFunctions import nearestNeighborLinearInterp
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -28,10 +28,10 @@ Mass1ag = np.loadtxt('../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data'
 Mass2ag = np.loadtxt('../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data', usecols=(4))
 
 # Estimated Ti44 Mass
-TiMass1aa = steppedLinearInterp(inputData, Mass1aa)
-TiMass2aa = steppedLinearInterp(inputData, Mass2aa)
-TiMass1ag = steppedLinearInterp(inputData, Mass1ag)
-TiMass2ag = steppedLinearInterp(inputData, Mass2ag)
+TiMass1aa = nearestNeighborLinearInterp(inputData, Mass1aa)
+TiMass2aa = nearestNeighborLinearInterp(inputData, Mass2aa)
+TiMass1ag = nearestNeighborLinearInterp(inputData, Mass1ag)
+TiMass2ag = nearestNeighborLinearInterp(inputData, Mass2ag)
 
 
 x = np.linspace(np.amin(Mass1aa), np.amax(Mass1aa), len(TiMass1aa))

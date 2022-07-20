@@ -92,7 +92,7 @@ def assignValue(df):
     return df
 
 
-def steppedLinearInterp(inputXandY, toEstimateX): 
+def nearestNeighborLinearInterp(inputXandY, toEstimateX): 
     """
     This function finds the two x values nearest to the data given and creates
     a linear fit from those two points to find an estimate for the data. This 
@@ -149,23 +149,6 @@ def steppedLinearInterp(inputXandY, toEstimateX):
                 break  
     
     return y
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
