@@ -79,7 +79,6 @@ i = 0
 for i in range(len(he_data)): 
     ti_model.append(fit_t[fetch_index(co_data[i], co_arr), fetch_index(he_data[i], he_arr)])
 
-
 def fetch_err(dat_arr, mod_arr): 
     """ 
     returns an array with the %error between data/model
@@ -87,14 +86,16 @@ def fetch_err(dat_arr, mod_arr):
     err = [] 
     i = 0
     for i in range(len(dat_arr)): 
-        err.append(100*np.abs((mod_arr[i] - dat_arr[i]) / dat_arr[i])) 
+        temp_he = np.delete(he_data, i, 0) 
+        temp_co = np.delete(co_data, i, 0) 
+        temp_ti = np.delete(co_data, i, 0) 
+        temp_fit_fn = interp2d(temp_he, temp_co, temp_ti, kind='linear')
+        # err.append(100*np.abs((ti_data[i] - temp_fit_fn(he_data[i], co_data[i])) / ti_data[i])) 
     return err 
 
-"""
 print(fetch_err(ti_data, ti_model)) 
 print("\n") 
 print(np.mean(fetch_err(ti_data, ti_model))) 
-"""
 
 def ti_mass(he_mass, co_mass): 
     return fit_t[fetch_index(co_mass, co_arr), fetch_index(he_mass, he_arr)] 
