@@ -12,7 +12,7 @@ from scipy.interpolate import interp2d
 
 # Gronow data occupies rows 0-12
 # Leung data occupies rows 13-19
-data = np.loadtxt("../Input Data/he_co_ti_dat.txt") 
+data = np.loadtxt("../../Input Data/he_co_ti_dat.txt") 
 
 # 1 - Gronow
 # 2 - Leung (produces warning with too small a sample) 
