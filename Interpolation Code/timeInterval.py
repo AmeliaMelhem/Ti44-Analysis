@@ -27,17 +27,17 @@ aaIntervals = findInterval(aaDataset)
 agIntervals = findInterval(agDataset)
 
 
-plt.xlim(0,0.6e6)
-plt.hist(aaIntervals, bins=1000)
+# plt.xlim(0,0.6e6)
+# plt.hist(aaIntervals, bins=5000)
 
 
-# xSpace = np.linspace(0, np.max(agIntervals), len(agIntervals))
-# plt.plot(xSpace, agIntervals)
+xSpace = np.linspace(0, np.max(aaIntervals), len(aaIntervals))
+plt.plot(xSpace, aaIntervals)
 
-plt.ylabel("Frequency")
-plt.xlabel("Interval Length (years)")
-plt.title("Interval Lengths Histogram (aa Dataset)")
+plt.xlabel("Time (years)")
+plt.ylabel("Interval Length (years)")
+plt.title("Interval Lengths Over Time(aa Dataset)")
 
 
 plt.show()
-#plt.savefig("../Output Data/" + "IntervalHisto_aa")
+#plt.savefig("../Output Data/" + "IntervalHisto_ag") # Not saving images correctly??
