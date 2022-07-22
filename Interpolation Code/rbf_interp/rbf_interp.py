@@ -17,7 +17,7 @@ class RBF_interp:
     # Object for RBF interpolation
     # call constructor once then call interp method for each desired point
     
-    def __init__(self, pts, vals, func = "multiquadric", scale = 0.001, norm = False): 
+    def __init__(self, pts, vals, func = "multiquadric", scale = 0.0001, norm = False): 
         # Constructor:
         # Initializes RBF values and w vector for known points 
         # @pts:     n x dim matrix for the data points
