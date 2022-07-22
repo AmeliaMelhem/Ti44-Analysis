@@ -57,7 +57,8 @@ for i in range(len(funcs)):
         # plotting configuration 
         plt.pcolormesh(he_arr, co_arr, ti_interp_tab)
         plt.colorbar().set_label("Ti44 Mass", rotation=270) 
-        plt.title(f"RBF: {label}\nError: {error}") 
+        plt.title(f"RBF: {label}\nError: {error}\nScale Factor: {ti_interp.scale}") 
         plt.xlabel("He mass") 
         plt.ylabel("Core mass") 
         plt.savefig("../../Plots/rbf_interp_plots/" + label)
+        plt.close("all") 
