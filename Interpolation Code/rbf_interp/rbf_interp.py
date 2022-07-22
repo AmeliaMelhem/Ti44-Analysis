@@ -5,10 +5,6 @@ Module intended to replace our current use of Scipy's interp2d member
 Utilizes the 'radial basis function' interpolant to derive a smooth image from a set of scattered points in any dimension. 
 Based heavily on Numerical Recipes sect. 3.7
 
-Caveats: 
-This is computationally expensive as solving linear systems of n equations takes O(n^3)
-Image can still be negative as weighting vector w can hold large negative values
-
 Acknowledgements: 
 Scipy.interpolate source code 
  * https://github.com/scipy/scipy/blob/main/scipy/interpolate/
@@ -21,7 +17,7 @@ class RBF_interp:
     # Object for RBF interpolation
     # call constructor once then call interp method for each desired point
     
-    def __init__(self, pts, vals, func = "multiquadric", scale = 1, norm = False): 
+    def __init__(self, pts, vals, func = "multiquadric", scale = 0.001, norm = False): 
         # Constructor:
         # Initializes RBF values and w vector for known points 
         # @pts:     n x dim matrix for the data points
@@ -36,7 +32,7 @@ class RBF_interp:
         self.dim = int(np.shape(pts)[1]) # number of columns 
         self.n = int(np.shape(pts)[0]) # number of rows 
         self.vals = vals
-        self.fn = func
+        self.func = func
         self.scale = scale
         self.norm = norm
         
@@ -80,7 +76,7 @@ class RBF_interp:
 
     def rbf_fn(self, r): 
         # radial basis function 
-        match self.fn: 
+        match self.func: 
             case "multiquadric": 
                 return np.sqrt(r**2 + self.scale**2)
             case "inv_multiquadric": 
@@ -102,11 +98,22 @@ class RBF_interp:
 
     def err(self): 
         # calculates average error for the interpolated function 
-        # removes one known pt/val at a time, then finds error when plugged in
-        pass
-
+        i = 0
+        errs = [] 
+        for i in range(self.n): 
+            temp_pts = np.delete(self.pts, i, 0) 
+            temp_vals = np.delete(self.vals, i, 0) 
+            temp_interp = RBF_interp(temp_pts, temp_vals, self.func, self.scale, self.norm) 
+            errs.append(100*np.abs((self.vals[i]-temp_interp.interp(self.pts[i]))/self.vals[i])) 
+        return np.mean(errs) 
+        
 
     def optimize(self): 
         # modifies self.scale such that self.err() is minimized 
-        pass
+        temp = RBF_interp(self.pts, self.vals, self.func, self.scale + 0.001, self.norm) 
+        if self.err() > temp.err():
+            self.scale = temp.scale
+            self.optimize() 
+        else: 
+            return None
 
