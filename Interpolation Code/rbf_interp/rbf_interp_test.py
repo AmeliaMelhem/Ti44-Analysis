@@ -21,24 +21,18 @@ co_arr = pts[:,1]
 he_arr = np.linspace(np.amin(he_arr), np.amax(he_arr), 50) 
 co_arr = np.linspace(np.amin(co_arr), np.amax(co_arr), 50) 
 
-
+"""
+###########
 # Toggle the following for debugging 
+ti_interp = RBF_interp(pts, vals, func = funcs[0], norm = nrbf[0])
+# print(ti_interp.err()) 
+# print(ti_interp.scale)
+###########
 """
-ti_interp = RBF_interp(pts, vals, func = funcs[3], norm = nrbf[1])
-
-print(ti_interp.err()) 
-print(ti_interp.scale) 
-
-ti_interp.optimize() 
-print(ti_interp.err()) 
-print(ti_interp.scale) 
-"""
-
 
 # The following code plots each possible func/normalization 
 # and includes error and optimal scale factor values 
-i = 0 
-j = 0
+"""
 for i in range(len(funcs)): 
     for j in range(len(nrbf)): 
         # set-up interpolating function 
@@ -62,3 +56,4 @@ for i in range(len(funcs)):
         plt.ylabel("Core mass") 
         plt.savefig("../../Plots/rbf_interp_plots/" + label)
         plt.close("all") 
+"""

@@ -10,8 +10,7 @@ Scipy.interpolate source code
  * https://github.com/scipy/scipy/blob/main/scipy/interpolate/
 Numerical Recipies section 3.7
 """
-
-import numpy as np
+import numpy as np 
 
 class RBF_interp: 
     # Object for RBF interpolation
@@ -52,9 +51,8 @@ class RBF_interp:
             else: 
                 rhs[i] = self.vals[i]
         
-        # Then to solve the set of equations for weighting vector w
+        # Then to solve the set of equations for weighting vector w 
         self.w = np.linalg.solve(rbf_mat, rhs) 
-
         
 
     def interp(self, pt): 
@@ -98,8 +96,8 @@ class RBF_interp:
 
     def err(self): 
         # calculates average error for the interpolated function 
-        i = 0
         errs = [] 
+        i = 0
         for i in range(self.n): 
             temp_pts = np.delete(self.pts, i, 0) 
             temp_vals = np.delete(self.vals, i, 0) 
@@ -110,10 +108,17 @@ class RBF_interp:
 
     def optimize(self): 
         # modifies self.scale such that self.err() is minimized 
-        temp = RBF_interp(self.pts, self.vals, self.func, self.scale + 0.001, self.norm) 
-        if self.err() > temp.err():
-            self.scale = temp.scale
-            self.optimize() 
-        else: 
-            return None
 
+        # creates dict of scales (values) and corresponding error (keys)
+        # linspace arr params currently apply only to ti_interp data 
+        # should determine a way to set this generally 
+        scales = np.linspace(0.000001, 0.01, 50)
+        err_scl = {} 
+        for i in scales: 
+            temp = RBF_interp(self.pts, self.vals, self.func, i, self.norm) 
+            err_scl.update({temp.err():i}) 
+
+        # then finds minimum value for error 
+        # and updates self.scale accordingly 
+        self.scale = err_scl[min(err_scl.keys())] 
+        return None 
