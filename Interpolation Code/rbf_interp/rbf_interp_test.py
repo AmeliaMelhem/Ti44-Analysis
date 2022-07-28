@@ -54,6 +54,6 @@ for i in range(len(funcs)):
         plt.title(f"RBF: {label}\nError: {error}\nScale Factor: {ti_interp.scale}") 
         plt.xlabel("He mass") 
         plt.ylabel("Core mass") 
-        plt.savefig("../../Plots/rbf_interp_plots/" + label)
+        plt.savefig("../../Plots/rbf_interp_plots/testing/" + label)
         plt.close("all") 
 """
