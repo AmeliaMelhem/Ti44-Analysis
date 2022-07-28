@@ -28,7 +28,7 @@ def linearInterp(x, slope, yIntercept):
         y = '-'   
         
     else:
-        x = slope*float(x) + yIntercept # Lin Interp
+        y = slope*float(x) + yIntercept # Lin Interp
         
     return y
 

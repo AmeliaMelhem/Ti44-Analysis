@@ -12,23 +12,8 @@ import groupFunctions as gf
 
 
 # pulls merger times and changes units to years, then sorts them
-aaDataset = (10**6) * np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data", usecols=2) 
+aaDataset = (10**6) * np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data", usecols=2)
 agDataset = (10**6) * np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data", usecols=2)
-
-
-
-percent = 0.5
-
-
-totalNumber = int( percent*len(aaDataset) )
-aaSample = np.random.choice(aaDataset, totalNumber)
-
-totalNumber = int( percent*len(agDataset) )
-agSample = np.random.choice(agDataset, totalNumber)
-
-
-aaIntervals = gf.findInterval(aaSample)
-agIntervals = gf.findInterval(agSample)
 
 
 # Can be made shorter, written out for clarity's sake
@@ -56,7 +41,7 @@ agNumbers, agSample = samplePoints(agDataset)
 
 plt.plot(aaNumbers, aaSample, label = "aa Dataset Medians")
 plt.plot(agNumbers, agSample, label = "ag Dataset Medians")
-plt.plot( xValues, oneOverX, label = "Test Fit")
+# plt.plot( xValues, oneOverX, label = "Test Fit")
 
 
 
