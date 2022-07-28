@@ -171,7 +171,14 @@ def positronFromTi(tiMass):
     return positronAmount
 
 
-
+def findInterval(dataset):
+    import numpy as np
+    intervals = []
+    dataset = np.sort(dataset)
+    for x in range(len(dataset)-1):
+        intervals.append( dataset[x+1]-dataset[x] ) 
+    
+    return intervals
 
 
 
