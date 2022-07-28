@@ -72,6 +72,15 @@ class RBF_interp:
             return sum_w
 
 
+    def arr_interp(self, inp): 
+        # returns an array of interpolated values from input pts arr
+        # pts has dim columns, and any number of rows 
+        outp = [] 
+        for i in range(np.shape(inp)[0]): 
+            outp.append(self.interp(inp[i,:])) 
+        return outp
+
+
     def rbf_fn(self, r): 
         # radial basis function 
         match self.func: 
