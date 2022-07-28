@@ -12,42 +12,54 @@ import groupFunctions as gf
 
 
 # pulls merger times and changes units to years, then sorts them
-aaDataset = (10**6) * np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data", usecols=2)
-agDataset = (10**6) * np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data", usecols=2)
+aaDataset = np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data", usecols=(2,3,4))
+agDataset = np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data", usecols=(2,3,4))
+
+aaDataset[:,0] = (10**6) * aaDataset[:,0] # time unit from Myr to yr
+agDataset[:,0] = (10**6) * agDataset[:,0] # time unit from Myr to yr
+
+
+
+aaMasses = np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data", usecols=3) + \
+    np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data", usecols=4)
+agMasses = np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data", usecols=3) + \
+    np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data", usecols=4)
 
 
 # Can be made shorter, written out for clarity's sake
 def samplePoints(dataset):
     allNumbers = []
     allSampleMedians = []
+    allSampleMasses = []
     for x in range(100): 
         percent = 0.01*x + 0.01
-        
         totalNumber = int( percent*len(dataset) )
-        sample = np.random.choice(dataset, totalNumber)
         
+        sample = np.random.permutation(dataset)
+        sample = sample[0:totalNumber]        
+
         allNumbers.append(totalNumber)
+        allSampleMedians.append( np.median( gf.findInterval( sample[:,0] ) ) )
+        allSampleMasses.append( np.sum(sample[:,(1,2)] ) ) #adds both masses
         
-        allSampleMedians.append(np.median(gf.findInterval(sample)))
         
-        
-        
-    return allNumbers, allSampleMedians
-
-aaNumbers, aaSample = samplePoints(aaDataset)
-agNumbers, agSample = samplePoints(agDataset)
+    return allNumbers, allSampleMasses, allSampleMedians 
 
 
+aaNumbers, aaMasses, aaMedian = samplePoints(aaDataset)
+agNumbers, agMasses, agMedian = samplePoints(agDataset)
 
-plt.plot(aaNumbers, aaSample, label = "aa Dataset Medians")
-plt.plot(agNumbers, agSample, label = "ag Dataset Medians")
+
+
+plt.plot(aaMasses, aaMedian, label = "aa Dataset Interval Medians")
+plt.plot(agMasses, agMedian, label = "ag Dataset Interval Medians")
 # plt.plot( xValues, oneOverX, label = "Test Fit")
 
 
 
-plt.title("Random Sampling Medians")
-plt.xlabel("Number of Points Sampled")
-plt.ylabel("Median of the Random Sample")
+plt.title("Random Sample Mass vs Interval Medians")
+plt.xlabel("Random Sample Masses")
+plt.ylabel("Random Sample Interval Medians")
 plt.legend()
 plt.show()
 
