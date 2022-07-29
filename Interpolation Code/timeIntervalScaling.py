@@ -19,21 +19,15 @@ aaDataset[:,0] = (10**6) * aaDataset[:,0] # time unit from Myr to yr
 agDataset[:,0] = (10**6) * agDataset[:,0] # time unit from Myr to yr
 
 
-
-aaMasses = np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data", usecols=3) + \
-    np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data", usecols=4)
-agMasses = np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data", usecols=3) + \
-    np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data", usecols=4)
-
-
-# Can be made shorter, written out for clarity's sake
-def samplePoints(dataset):
+# Takes numSamples number of samples for the given dataset, and creates 3 lists
+# First is number of mergers in each sample, second is the total sample mass,
+# third is the median interval lengths in each sample
+def samplePoints(dataset, numSamples):
     allNumbers = []
     allSampleMedians = []
     allSampleMasses = []
-    for x in range(100): 
-        percent = 0.01*x + 0.01
-        totalNumber = int( percent*len(dataset) )
+    for x in range(numSamples): 
+        totalNumber = int( (x+1)/numSamples*len(dataset) )
         
         sample = np.random.permutation(dataset)
         sample = sample[0:totalNumber]        
@@ -46,20 +40,25 @@ def samplePoints(dataset):
     return allNumbers, allSampleMasses, allSampleMedians 
 
 
-aaNumbers, aaMasses, aaMedian = samplePoints(aaDataset)
-agNumbers, agMasses, agMedian = samplePoints(agDataset)
+aaNumbers, aaMasses, aaMedian = samplePoints(aaDataset, 100)
+agNumbers, agMasses, agMedian = samplePoints(agDataset, 100)
+
+# x = number of mergers
+plt.plot(np.log(aaNumbers), np.log(aaMedian), label = "aa Dataset Interval Medians")
+plt.plot(np.log(agNumbers), np.log(agMedian), label = "ag Dataset Interval Medians")
+plt.title("Logged Random Sample Merger Number vs Interval Medians")
+plt.xlabel("Logged Random Sample Merger Number")
+
+
+# x = total system mass
+# plt.plot(np.log(aaMasses), np.log(aaMedian), label = "aa Dataset Interval Medians")
+# plt.plot(np.log(agMasses), np.log(agMedian), label = "ag Dataset Interval Medians")
+# plt.title("Logged Random Sample Mass vs Interval Medians")
+# plt.xlabel("Logged Random Sample Masses")
 
 
 
-plt.plot(np.log(aaMasses), np.log(aaMedian), label = "aa Dataset Interval Medians")
-plt.plot(np.log(agMasses), np.log(agMedian), label = "ag Dataset Interval Medians")
-# plt.plot( xValues, oneOverX, label = "Test Fit")
-
-
-
-plt.title("Random Sample Mass vs Interval Medians")
-plt.xlabel("Random Sample Masses")
-plt.ylabel("Random Sample Interval Medians")
+plt.ylabel("Logged Random Sample Interval Medians")
 plt.legend()
 plt.show()
 
