@@ -29,8 +29,7 @@ def samplePoints(dataset, numSamples):
     for x in range(numSamples): 
         totalNumber = int( (x+1)/numSamples*len(dataset) )
         
-        sample = np.random.permutation(dataset)
-        sample = sample[0:totalNumber]        
+        sample = np.random.permutation(dataset)[0:totalNumber]
 
         allNumbers.append(totalNumber)
         allSampleMedians.append( np.median( gf.findInterval( sample[:,0] ) ) )
@@ -44,22 +43,33 @@ aaNumbers, aaMasses, aaMedian = samplePoints(aaDataset, 100)
 agNumbers, agMasses, agMedian = samplePoints(agDataset, 100)
 
 # x = number of mergers
-plt.plot(np.log(aaNumbers), np.log(aaMedian), label = "aa Dataset Interval Medians")
-plt.plot(np.log(agNumbers), np.log(agMedian), label = "ag Dataset Interval Medians")
-plt.title("Logged Random Sample Merger Number vs Interval Medians")
-plt.xlabel("Logged Random Sample Merger Number")
+# plt.plot(np.log(aaNumbers), np.log(aaMedian), label = "aa Dataset Interval Medians")
+# plt.plot(np.log(agNumbers), np.log(agMedian), label = "ag Dataset Interval Medians")
+# plt.title("Logged Random Sample Merger Number vs Interval Medians")
+# plt.xlabel("Logged Random Sample Merger Number")
 
 
 # x = total system mass
-# plt.plot(np.log(aaMasses), np.log(aaMedian), label = "aa Dataset Interval Medians")
-# plt.plot(np.log(agMasses), np.log(agMedian), label = "ag Dataset Interval Medians")
-# plt.title("Logged Random Sample Mass vs Interval Medians")
-# plt.xlabel("Logged Random Sample Masses")
-
+plt.plot(np.log(aaMasses), np.log(aaMedian), label = "aa Dataset Interval Medians")
+plt.plot(np.log(agMasses), np.log(agMedian), label = "ag Dataset Interval Medians")
+plt.title("Logged Random Sample Mass vs Interval Medians")
+plt.xlabel("Logged Random Sample Masses")
 
 
 plt.ylabel("Logged Random Sample Interval Medians")
 plt.legend()
 plt.show()
+
+
+aaSlope, aaYintercept = np.polyfit(np.log(aaNumbers), np.log(aaMedian), 1)
+agSlope, agYintercept = np.polyfit(np.log(agNumbers), np.log(agMedian), 1)
+
+x = 1e9 # 
+
+print("The aa model predicts 1 merger every %.6f years for the Milky Way"%np.e**(aaSlope*np.log(x)+aaYintercept) )
+print("The ag model predicts 1 merger every %.6f years for the Milky Way"%np.e**(agSlope*np.log(x)+agYintercept) )
+
+
+
 
 
