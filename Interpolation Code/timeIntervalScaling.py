@@ -43,21 +43,22 @@ aaNumbers, aaMasses, aaMedian = samplePoints(aaDataset, 100)
 agNumbers, agMasses, agMedian = samplePoints(agDataset, 100)
 
 # x = number of mergers
-# plt.plot(np.log(aaNumbers), np.log(aaMedian), label = "aa Dataset Interval Medians")
-# plt.plot(np.log(agNumbers), np.log(agMedian), label = "ag Dataset Interval Medians")
-# plt.title("Logged Random Sample Merger Number vs Interval Medians")
-# plt.xlabel("Logged Random Sample Merger Number")
+plt.plot(np.log(aaNumbers), np.log(aaMedian), label = "aa Dataset Interval Medians")
+plt.plot(np.log(agNumbers), np.log(agMedian), label = "ag Dataset Interval Medians")
+plt.title("Logged Random Sample Merger Number vs Interval Medians")
+plt.xlabel("Logged Random Sample Merger Number")
 
 
 # x = total system mass
-plt.plot(np.log(aaMasses), np.log(aaMedian), label = "aa Dataset Interval Medians")
-plt.plot(np.log(agMasses), np.log(agMedian), label = "ag Dataset Interval Medians")
-plt.title("Logged Random Sample Mass vs Interval Medians")
-plt.xlabel("Logged Random Sample Masses")
+# plt.plot(np.log(aaMasses), np.log(aaMedian), label = "aa Dataset Interval Medians")
+# plt.plot(np.log(agMasses), np.log(agMedian), label = "ag Dataset Interval Medians")
+# plt.title("Logged Random Sample Mass vs Interval Medians")
+# plt.xlabel("Logged Random Sample Masses")
 
 
 plt.ylabel("Logged Random Sample Interval Medians")
 plt.legend()
+# plt.savefig("../Plots/LoggedRandomSample")
 plt.show()
 
 
