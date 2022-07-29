@@ -51,8 +51,8 @@ agNumbers, agMasses, agMedian = samplePoints(agDataset)
 
 
 
-plt.plot(aaMasses, aaMedian, label = "aa Dataset Interval Medians")
-plt.plot(agMasses, agMedian, label = "ag Dataset Interval Medians")
+plt.plot(np.log(aaMasses), np.log(aaMedian), label = "aa Dataset Interval Medians")
+plt.plot(np.log(agMasses), np.log(agMedian), label = "ag Dataset Interval Medians")
 # plt.plot( xValues, oneOverX, label = "Test Fit")
 
 
