@@ -33,8 +33,10 @@ plt.close("all")
 
 # Plotting total Ti44 produced over time
 # aa 
-plt.scatter(aa_times, aa_totalTi_max, color = 'Red', label = 'He max') 
-plt.scatter(aa_times, aa_totalTi_min, color = 'Blue', label = 'He min') 
+plt.scatter(aa_times, aa_totalTi_max, color = 'Red', alpha = 0.5, label = 'He max') 
+plt.scatter(aa_times, aa_totalTi_min, color = 'Blue', alpha = 0.5, label = 'He min') 
+plt.plot(aa_times_lin, aa_TImax_fn(aa_times_lin), color = 'Red') 
+plt.plot(aa_times_lin, aa_TImin_fn(aa_times_lin), color = 'Blue') 
 plt.title("Total Ti44 produced per total CO (aa sample)") 
 plt.xlabel("Time (Myr)") 
 plt.ylabel("Ti44 mass (Msun)") 
@@ -42,8 +44,10 @@ plt.legend()
 plt.savefig("../../Plots/rbf_interp_plots/results/aaTi_total") 
 plt.close("all") 
 # ag
-plt.scatter(ag_times, ag_totalTi_max, color = 'Red', label = 'He max') 
-plt.scatter(ag_times, ag_totalTi_min, color = 'Blue', label = 'He min') 
+plt.scatter(ag_times, ag_totalTi_max, color = 'Red', alpha = 0.5, label = 'He max') 
+plt.scatter(ag_times, ag_totalTi_min, color = 'Blue', alpha = 0.5, label = 'He min') 
+plt.plot(ag_times_lin, ag_TImax_fn(ag_times_lin), color = 'Red') 
+plt.plot(ag_times_lin, ag_TImin_fn(ag_times_lin), color = 'Blue') 
 plt.title("Total Ti44 produced per total CO (ag sample)") 
 plt.xlabel("Time (Myr)") 
 plt.ylabel("Ti44 mass (Msun)") 
@@ -71,7 +75,6 @@ plt.ylabel("Number of positrons")
 plt.legend() 
 plt.savefig("../../Plots/rbf_interp_plots/results/agPos") 
 plt.close("all") 
-"""
 
 # Plotting total postitrons produced over time 
 # aa 
@@ -92,3 +95,4 @@ plt.ylabel("Number of positrons")
 plt.legend() 
 plt.savefig("../../Plots/rbf_interp_plots/results/agPos_total") 
 plt.close("all")
+"""

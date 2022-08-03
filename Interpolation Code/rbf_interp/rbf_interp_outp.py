@@ -49,6 +49,7 @@ from rbf_interp import *
 #import numpy as np (within rbf_interp) 
 import pandas as pd 
 import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit 
 
 
 ######### Importing Data ############
@@ -164,6 +165,7 @@ aa_totalTi_min = total_arr(aa_ti_min, aa_wd1min_pts, aa_wd2min_pts)
 ag_totalTi_max = total_arr(ag_ti_max, ag_wd1max_pts, ag_wd2max_pts) 
 ag_totalTi_min = total_arr(ag_ti_min, ag_wd1min_pts, ag_wd2min_pts) 
 
+"""
 # Finding positrons from Ti mass arrays 
 aa_pos_max = np.array(positronFromTi(aa_ti_max)) 
 aa_pos_min = np.array(positronFromTi(aa_ti_min)) 
@@ -175,4 +177,55 @@ aa_totalPos_max = total_arr(aa_pos_max, aa_wd1max_pts, aa_wd2max_pts)
 aa_totalPos_min = total_arr(aa_pos_min, aa_wd1min_pts, aa_wd2min_pts) 
 ag_totalPos_max = total_arr(ag_pos_max, ag_wd1max_pts, ag_wd2max_pts) 
 ag_totalPos_min = total_arr(ag_pos_min, ag_wd1min_pts, ag_wd2min_pts) 
+"""
 
+###### Fits ######
+
+# Model function 
+def model(x, a, b, c): 
+    return a*x*np.exp(-b*x) + c
+
+# Fitting parameters 
+aa_Ti_max_fit, pcov = curve_fit(model, aa_times, aa_totalTi_max, (4e-8, 3.3e-4, 5e-4)) 
+aa_Ti_min_fit, pcov = curve_fit(model, aa_times, aa_totalTi_min, (4e-8, 3.3e-4, 5e-4))
+ag_Ti_max_fit, pcov = curve_fit(model, ag_times, ag_totalTi_max, (4e-8, 3.3e-4, 5e-4)) 
+ag_Ti_min_fit, pcov = curve_fit(model, ag_times, ag_totalTi_min, (4e-8, 3.3e-4, 5e-4))
+
+# Linspace arrays 
+aa_times_lin = np.linspace(np.amin(aa_times), np.amax(aa_times), 150) 
+ag_times_lin = np.linspace(np.amin(ag_times), np.amax(ag_times), 150) 
+
+# Functions 
+def aa_TImax_fn(t): 
+    return model(t, aa_Ti_max_fit[0], aa_Ti_max_fit[1], aa_Ti_max_fit[2]) 
+def aa_TImin_fn(t): 
+    return model(t, aa_Ti_min_fit[0], aa_Ti_min_fit[1], aa_Ti_min_fit[2]) 
+def ag_TImax_fn(t): 
+    return model(t, ag_Ti_max_fit[0], ag_Ti_max_fit[1], ag_Ti_max_fit[2]) 
+def ag_TImin_fn(t): 
+    return model(t, ag_Ti_min_fit[0], ag_Ti_min_fit[1], ag_Ti_min_fit[2]) 
+
+"""
+# I tried out np.polyfit, 
+# But it appears not to resemble a polynomial too well 
+
+# Parameter tuples 
+aa_Ti_max_fit = np.polyfit(aa_times, aa_totalTi_max, 4) 
+aa_Ti_min_fit = np.polyfit(aa_times, aa_totalTi_min, 4) 
+ag_Ti_max_fit = np.polyfit(ag_times, ag_totalTi_max, 4) 
+ag_Ti_min_fit = np.polyfit(ag_times, ag_totalTi_min, 4) 
+
+# Functions 
+# t can be array or point like 
+def aa_TImax_fn(t): 
+    return aa_Ti_max_fit[0]*np.power(t,4) + aa_Ti_max_fit[1]*np.power(t,3) + aa_Ti_max_fit[2]*np.power(t,2) + aa_Ti_max_fit[3]*t + aa_Ti_max_fit[4]
+
+def aa_TImin_fn(t): 
+    return aa_Ti_min_fit[0]*np.power(t,4) + aa_Ti_min_fit[1]*np.power(t,3) + aa_Ti_min_fit[2]*np.power(t,2) + aa_Ti_min_fit[3]*t + aa_Ti_min_fit[4]
+
+def ag_TImax_fn(t): 
+    return ag_Ti_max_fit[0]*np.power(t,4) + ag_Ti_max_fit[1]*np.power(t,3) + ag_Ti_max_fit[2]*np.power(t,2) + ag_Ti_max_fit[3]*t + ag_Ti_max_fit[4]
+
+def ag_TImin_fn(t): 
+    return ag_Ti_min_fit[0]*np.power(t,4) + ag_Ti_min_fit[1]*np.power(t,3) + ag_Ti_min_fit[2]*np.power(t,2) + ag_Ti_min_fit[3]*t + ag_Ti_min_fit[4]
+"""
