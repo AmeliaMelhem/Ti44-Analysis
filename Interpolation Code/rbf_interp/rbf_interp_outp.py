@@ -29,6 +29,16 @@ and was optimized precisely with scale-factor set to zero, with no strange behav
 so we have, very simply, phi(r) = |r| 
 and our fit is just a linear combination of |r| that spans dim(# of data points) 
 """ 
+""" 
+Updates from Aug 3: 
+Attempts to make relationship intensive by outputting Ti^44 mass...
+In units of Ti^44 mass per stellar mass that produced said Ti^44 
+Then, 
+Plotting said data over time to potentially yield some fit 
+
+Also, commenting out some extraneous blocks to make the relevant bits run faster 
+""" 
+####################
 
 
 # includes ...
@@ -108,21 +118,51 @@ ag_ti_max += np.array(ti_interp.arr_interp(ag_wd2max_pts))
 ag_ti_min = np.array(ti_interp.arr_interp(ag_wd1min_pts)) 
 ag_ti_min += np.array(ti_interp.arr_interp(ag_wd2min_pts)) 
 
+#################
+""" 
+Quick update Aug 3
+Divided entrywise by mass that produced Ti44
+in this case, (WD1_m + WD2_m)
+Consider adding Helium masses to denominator? 
+
+def mass_normalization(ti_arr, wd1_pts_arr, wd2_pts_arr): 
+    # Takes in numpy arrays (from data above) 
+    # assuming wd*_pts_arr is indexed like [He_mass, WD*_mass] 
+    # and performs the following calculation entrywise: 
+    Ti_mass = Ti_mass / (WD1_mass + WD2_mass) 
+    wd_mass_sum = wd1_pts_arr[:,1] + wd2_pts_arr[:,1] 
+    return ti_arr / wd_mass_sum
+
+aa_ti_max = mass_normalization(aa_ti_max, aa_wd1max_pts, aa_wd2max_pts) 
+aa_ti_min = mass_normalization(aa_ti_min, aa_wd1min_pts, aa_wd2min_pts) 
+ag_ti_max = mass_normalization(ag_ti_max, ag_wd1max_pts, ag_wd2max_pts) 
+ag_ti_min = mass_normalization(ag_ti_min, ag_wd1min_pts, ag_wd2min_pts) 
+
+This appears to get a better picture for the plots that show Ti44 produced at each moment in time 
+But doesn't serve to get the total Ti44 plots intensive
+"""
+#################
+
 # Function to sum over values of an array
 # Returning an array with entries as sum up to that point 
-def total_arr(arr): 
-    summ = 0
-    total = [] 
-    for m in arr: 
-        summ += m
-        total.append(summ) 
-    return np.array(total) 
+# Update Aug 3: Normalized to total CO mass at each point 
+def total_arr(ti_arr, wd1_pts_arr, wd2_pts_arr): 
+    # inputs are numpy arrays for entrywise addition to work correctly 
+    wd_mass_sum_arr = wd1_pts_arr[:,1] + wd2_pts_arr[:,1] 
+    sum_ti = 0
+    sum_co = 0 
+    total = np.zeros(np.shape(ti_arr)[0]) 
+    for i in range(np.shape(ti_arr)[0]): 
+        sum_ti += ti_arr[i]
+        sum_co += wd_mass_sum_arr[i]
+        total[i] = sum_ti / sum_co
+    return total
 
 # Finding total Ti44 produced over time 
-aa_totalTi_max = total_arr(aa_ti_max) 
-aa_totalTi_min = total_arr(aa_ti_min) 
-ag_totalTi_max = total_arr(ag_ti_max) 
-ag_totalTi_min = total_arr(ag_ti_min) 
+aa_totalTi_max = total_arr(aa_ti_max, aa_wd1max_pts, aa_wd2max_pts) 
+aa_totalTi_min = total_arr(aa_ti_min, aa_wd1min_pts, aa_wd2min_pts) 
+ag_totalTi_max = total_arr(ag_ti_max, ag_wd1max_pts, ag_wd2max_pts) 
+ag_totalTi_min = total_arr(ag_ti_min, ag_wd1min_pts, ag_wd2min_pts) 
 
 # Finding positrons from Ti mass arrays 
 aa_pos_max = np.array(positronFromTi(aa_ti_max)) 
@@ -131,90 +171,8 @@ ag_pos_max = np.array(positronFromTi(ag_ti_max))
 ag_pos_min = np.array(positronFromTi(ag_ti_min)) 
 
 # Finding total positrons produced over time 
-aa_totalPos_max = total_arr(aa_pos_max) 
-aa_totalPos_min = total_arr(aa_pos_min) 
-ag_totalPos_max = total_arr(ag_pos_max) 
-ag_totalPos_min = total_arr(ag_pos_min) 
+aa_totalPos_max = total_arr(aa_pos_max, aa_wd1max_pts, aa_wd2max_pts) 
+aa_totalPos_min = total_arr(aa_pos_min, aa_wd1min_pts, aa_wd2min_pts) 
+ag_totalPos_max = total_arr(ag_pos_max, ag_wd1max_pts, ag_wd2max_pts) 
+ag_totalPos_min = total_arr(ag_pos_min, ag_wd1min_pts, ag_wd2min_pts) 
 
-
-############ Plots ############
-
-# Plotting Ti44 produced at each moment in time 
-# aa
-plt.scatter(aa_times, aa_ti_max, color = 'Red', label = 'He max') 
-plt.scatter(aa_times, aa_ti_min, color = 'Blue', label = 'He min') 
-plt.title("Ti44 produced at each time (aa sample)") 
-plt.xlabel("Time (Myr)") 
-plt.ylabel("Ti44 mass (Msun)") 
-plt.legend() 
-plt.savefig("../../Plots/rbf_interp_plots/results/aaTi") 
-plt.close("all") 
-# ag 
-plt.scatter(ag_times, ag_ti_max, color = 'Red', label = 'He max') 
-plt.scatter(ag_times, ag_ti_min, color = 'Blue', label = 'He min') 
-plt.title("Ti44 produced at each time (ag sample)") 
-plt.xlabel("Time (Myr)") 
-plt.ylabel("Ti44 mass (Msun)") 
-plt.legend() 
-plt.savefig("../../Plots/rbf_interp_plots/results/agTi") 
-plt.close("all") 
-
-# Plotting total Ti44 produced over time
-# aa 
-plt.scatter(aa_times, aa_totalTi_max, color = 'Red', label = 'He max') 
-plt.scatter(aa_times, aa_totalTi_min, color = 'Blue', label = 'He min') 
-plt.title("Total Ti44 produced (aa sample)") 
-plt.xlabel("Time (Myr)") 
-plt.ylabel("Ti44 mass (Msun)") 
-plt.legend() 
-plt.savefig("../../Plots/rbf_interp_plots/results/aaTi_total") 
-plt.close("all") 
-# ag
-plt.scatter(ag_times, ag_totalTi_max, color = 'Red', label = 'He max') 
-plt.scatter(ag_times, ag_totalTi_min, color = 'Blue', label = 'He min') 
-plt.title("Total Ti44 produced (ag sample)") 
-plt.xlabel("Time (Myr)") 
-plt.ylabel("Ti44 mass (Msun)") 
-plt.legend() 
-plt.savefig("../../Plots/rbf_interp_plots/results/agTi_total") 
-plt.close("all") 
-
-# Plotting positrons produced at each moment in time 
-# aa
-plt.scatter(aa_times, aa_pos_max, color = 'Red', label = 'He max') 
-plt.scatter(aa_times, aa_pos_min, color = 'Blue', label = 'He min') 
-plt.title("e+ produced at each time (aa sample)") 
-plt.xlabel("Time (Myr)") 
-plt.ylabel("Number of positrons") 
-plt.legend() 
-plt.savefig("../../Plots/rbf_interp_plots/results/aaPos") 
-plt.close("all") 
-# ag 
-plt.scatter(ag_times, ag_pos_max, color = 'Red', label = 'He max') 
-plt.scatter(ag_times, ag_pos_min, color = 'Blue', label = 'He min') 
-plt.title("e+ produced at each time (ag sample)") 
-plt.xlabel("Time (Myr)") 
-plt.ylabel("Number of positrons") 
-plt.legend() 
-plt.savefig("../../Plots/rbf_interp_plots/results/agPos") 
-plt.close("all") 
-
-# Plotting total postitrons produced over time 
-# aa 
-plt.scatter(aa_times, aa_totalPos_max, color = 'Red', label = 'He max') 
-plt.scatter(aa_times, aa_totalPos_min, color = 'Blue', label = 'He min')
-plt.title("Total positrons produced (aa sample)") 
-plt.xlabel("Time (Myr)") 
-plt.ylabel("Number of positrons") 
-plt.legend() 
-plt.savefig("../../Plots/rbf_interp_plots/results/aaPos_total") 
-plt.close("all") 
-# ag
-plt.scatter(ag_times, ag_totalPos_max, color = 'Red', label = 'He max') 
-plt.scatter(ag_times, ag_totalPos_min, color = 'Blue', label = 'He min')
-plt.title("Total positrons produced (ag sample)") 
-plt.xlabel("Time (Myr)") 
-plt.ylabel("Number of positrons") 
-plt.legend() 
-plt.savefig("../../Plots/rbf_interp_plots/results/agPos_total") 
-plt.close("all") 
