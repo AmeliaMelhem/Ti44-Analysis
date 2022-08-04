@@ -43,17 +43,17 @@ aaNumbers, aaMasses, aaMedian = samplePoints(aaDataset, 100)
 agNumbers, agMasses, agMedian = samplePoints(agDataset, 100)
 
 # x = number of mergers
-plt.plot(np.log(aaNumbers), np.log(aaMedian), label = "aa Dataset Interval Medians")
-plt.plot(np.log(agNumbers), np.log(agMedian), label = "ag Dataset Interval Medians")
-plt.title("Logged Random Sample Merger Number vs Interval Medians")
-plt.xlabel("Logged Random Sample Merger Number")
+# plt.plot(np.log(aaNumbers), np.log(aaMedian), label = "aa Dataset Interval Medians")
+# plt.plot(np.log(agNumbers), np.log(agMedian), label = "ag Dataset Interval Medians")
+# plt.title("Logged Random Sample Merger Number vs Interval Medians")
+# plt.xlabel("Logged Random Sample Merger Number")
 
 
 # x = total system mass
-# plt.plot(np.log(aaMasses), np.log(aaMedian), label = "aa Dataset Interval Medians")
-# plt.plot(np.log(agMasses), np.log(agMedian), label = "ag Dataset Interval Medians")
-# plt.title("Logged Random Sample Mass vs Interval Medians")
-# plt.xlabel("Logged Random Sample Masses")
+plt.plot(np.log(aaMasses), np.log(aaMedian), label = "aa Dataset Interval Medians")
+plt.plot(np.log(agMasses), np.log(agMedian), label = "ag Dataset Interval Medians")
+plt.title("Logged Random Sample Mass vs Interval Medians")
+plt.xlabel("Logged Random Sample Masses")
 
 
 plt.ylabel("Logged Random Sample Interval Medians")
@@ -65,10 +65,10 @@ plt.show()
 aaSlope, aaYintercept = np.polyfit(np.log(aaNumbers), np.log(aaMedian), 1)
 agSlope, agYintercept = np.polyfit(np.log(agNumbers), np.log(agMedian), 1)
 
-x = 1e9 # 
+x = 10e10 # 
 
-print("The aa model predicts 1 merger every %.6f years for the Milky Way"%np.e**(aaSlope*np.log(x)+aaYintercept) )
-print("The ag model predicts 1 merger every %.6f years for the Milky Way"%np.e**(agSlope*np.log(x)+agYintercept) )
+print(np.e**(aaSlope*np.log(x)+aaYintercept))
+print(np.e**(agSlope*np.log(x)+agYintercept))
 
 
 
