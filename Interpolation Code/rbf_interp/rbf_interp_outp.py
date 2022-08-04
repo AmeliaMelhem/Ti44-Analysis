@@ -44,11 +44,9 @@ Also, commenting out some extraneous blocks to make the relevant bits run faster
 # includes ...
 import sys
 sys.path.append('../')
-from groupFunctions import positronFromTi
 from rbf_interp import * 
 #import numpy as np (within rbf_interp) 
 import pandas as pd 
-import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit 
 
 
@@ -120,35 +118,12 @@ ag_ti_min = np.array(ti_interp.arr_interp(ag_wd1min_pts))
 ag_ti_min += np.array(ti_interp.arr_interp(ag_wd2min_pts)) 
 
 #################
-""" 
-Quick update Aug 3
-Divided entrywise by mass that produced Ti44
-in this case, (WD1_m + WD2_m)
-Consider adding Helium masses to denominator? 
-
-def mass_normalization(ti_arr, wd1_pts_arr, wd2_pts_arr): 
-    # Takes in numpy arrays (from data above) 
-    # assuming wd*_pts_arr is indexed like [He_mass, WD*_mass] 
-    # and performs the following calculation entrywise: 
-    Ti_mass = Ti_mass / (WD1_mass + WD2_mass) 
-    wd_mass_sum = wd1_pts_arr[:,1] + wd2_pts_arr[:,1] 
-    return ti_arr / wd_mass_sum
-
-aa_ti_max = mass_normalization(aa_ti_max, aa_wd1max_pts, aa_wd2max_pts) 
-aa_ti_min = mass_normalization(aa_ti_min, aa_wd1min_pts, aa_wd2min_pts) 
-ag_ti_max = mass_normalization(ag_ti_max, ag_wd1max_pts, ag_wd2max_pts) 
-ag_ti_min = mass_normalization(ag_ti_min, ag_wd1min_pts, ag_wd2min_pts) 
-
-This appears to get a better picture for the plots that show Ti44 produced at each moment in time 
-But doesn't serve to get the total Ti44 plots intensive
-"""
-#################
 
 # Function to sum over values of an array
 # Returning an array with entries as sum up to that point 
 # Update Aug 3: Normalized to total CO mass at each point 
 def total_arr(ti_arr, wd1_pts_arr, wd2_pts_arr): 
-    # inputs are numpy arrays for entrywise addition to work correctly 
+    # inputs must be numpy arrays for entrywise addition to work 
     wd_mass_sum_arr = wd1_pts_arr[:,1] + wd2_pts_arr[:,1] 
     sum_ti = 0
     sum_co = 0 
@@ -165,67 +140,41 @@ aa_totalTi_min = total_arr(aa_ti_min, aa_wd1min_pts, aa_wd2min_pts)
 ag_totalTi_max = total_arr(ag_ti_max, ag_wd1max_pts, ag_wd2max_pts) 
 ag_totalTi_min = total_arr(ag_ti_min, ag_wd1min_pts, ag_wd2min_pts) 
 
-"""
-# Finding positrons from Ti mass arrays 
-aa_pos_max = np.array(positronFromTi(aa_ti_max)) 
-aa_pos_min = np.array(positronFromTi(aa_ti_min)) 
-ag_pos_max = np.array(positronFromTi(ag_ti_max))
-ag_pos_min = np.array(positronFromTi(ag_ti_min)) 
-
-# Finding total positrons produced over time 
-aa_totalPos_max = total_arr(aa_pos_max, aa_wd1max_pts, aa_wd2max_pts) 
-aa_totalPos_min = total_arr(aa_pos_min, aa_wd1min_pts, aa_wd2min_pts) 
-ag_totalPos_max = total_arr(ag_pos_max, ag_wd1max_pts, ag_wd2max_pts) 
-ag_totalPos_min = total_arr(ag_pos_min, ag_wd1min_pts, ag_wd2min_pts) 
-"""
-
 ###### Fits ######
 
 # Model function 
-def model(x, a, b, c): 
-    return a*x*np.exp(-b*x) + c
+def model(x, a, b, c, d): 
+    return (a*x + b)*np.exp(-c*x) + d
 
-# Fitting parameters 
-aa_Ti_max_fit, pcov = curve_fit(model, aa_times, aa_totalTi_max, (4e-8, 3.3e-4, 5e-4)) 
-aa_Ti_min_fit, pcov = curve_fit(model, aa_times, aa_totalTi_min, (4e-8, 3.3e-4, 5e-4))
-ag_Ti_max_fit, pcov = curve_fit(model, ag_times, ag_totalTi_max, (4e-8, 3.3e-4, 5e-4)) 
-ag_Ti_min_fit, pcov = curve_fit(model, ag_times, ag_totalTi_min, (4e-8, 3.3e-4, 5e-4))
+# Fitting to model with curve_fit
+initial_guess = (7e-8, -1e-4, 5e-4, 9e-4) 
+aa_Ti_max_fit, cov1 = curve_fit(model, aa_times, aa_totalTi_max, p0 = initial_guess, absolute_sigma = True) 
+aa_Ti_min_fit, cov2 = curve_fit(model, aa_times, aa_totalTi_min, p0 = initial_guess, absolute_sigma = True)
+ag_Ti_max_fit, cov3 = curve_fit(model, ag_times, ag_totalTi_max, p0 = initial_guess, absolute_sigma = True) 
+ag_Ti_min_fit, cov4 = curve_fit(model, ag_times, ag_totalTi_min, p0 = initial_guess, absolute_sigma = True)
 
-# Linspace arrays 
+# Exporting fitting parameters to a file
+params = { 
+        'aa_max': aa_Ti_max_fit, 
+        'aa_min': aa_Ti_min_fit, 
+        'ag_max': ag_Ti_max_fit, 
+        'ag_min': ag_Ti_min_fit,
+        'param': ['a','b','c','d']
+} 
+params_df = pd.DataFrame(params) 
+params_df.set_index('param', inplace=True) 
+params_df.to_csv('rbf_interp_outp_params.txt', sep = ' ') 
+
+# Linspace arrays for plotting 
 aa_times_lin = np.linspace(np.amin(aa_times), np.amax(aa_times), 150) 
 ag_times_lin = np.linspace(np.amin(ag_times), np.amax(ag_times), 150) 
 
-# Functions 
+# Functions for plotting 
 def aa_TImax_fn(t): 
-    return model(t, aa_Ti_max_fit[0], aa_Ti_max_fit[1], aa_Ti_max_fit[2]) 
+    return model(t, aa_Ti_max_fit[0], aa_Ti_max_fit[1], aa_Ti_max_fit[2], aa_Ti_max_fit[3]) 
 def aa_TImin_fn(t): 
-    return model(t, aa_Ti_min_fit[0], aa_Ti_min_fit[1], aa_Ti_min_fit[2]) 
+    return model(t, aa_Ti_min_fit[0], aa_Ti_min_fit[1], aa_Ti_min_fit[2], aa_Ti_min_fit[3]) 
 def ag_TImax_fn(t): 
-    return model(t, ag_Ti_max_fit[0], ag_Ti_max_fit[1], ag_Ti_max_fit[2]) 
+    return model(t, ag_Ti_max_fit[0], ag_Ti_max_fit[1], ag_Ti_max_fit[2], ag_Ti_max_fit[3]) 
 def ag_TImin_fn(t): 
-    return model(t, ag_Ti_min_fit[0], ag_Ti_min_fit[1], ag_Ti_min_fit[2]) 
-
-"""
-# I tried out np.polyfit, 
-# But it appears not to resemble a polynomial too well 
-
-# Parameter tuples 
-aa_Ti_max_fit = np.polyfit(aa_times, aa_totalTi_max, 4) 
-aa_Ti_min_fit = np.polyfit(aa_times, aa_totalTi_min, 4) 
-ag_Ti_max_fit = np.polyfit(ag_times, ag_totalTi_max, 4) 
-ag_Ti_min_fit = np.polyfit(ag_times, ag_totalTi_min, 4) 
-
-# Functions 
-# t can be array or point like 
-def aa_TImax_fn(t): 
-    return aa_Ti_max_fit[0]*np.power(t,4) + aa_Ti_max_fit[1]*np.power(t,3) + aa_Ti_max_fit[2]*np.power(t,2) + aa_Ti_max_fit[3]*t + aa_Ti_max_fit[4]
-
-def aa_TImin_fn(t): 
-    return aa_Ti_min_fit[0]*np.power(t,4) + aa_Ti_min_fit[1]*np.power(t,3) + aa_Ti_min_fit[2]*np.power(t,2) + aa_Ti_min_fit[3]*t + aa_Ti_min_fit[4]
-
-def ag_TImax_fn(t): 
-    return ag_Ti_max_fit[0]*np.power(t,4) + ag_Ti_max_fit[1]*np.power(t,3) + ag_Ti_max_fit[2]*np.power(t,2) + ag_Ti_max_fit[3]*t + ag_Ti_max_fit[4]
-
-def ag_TImin_fn(t): 
-    return ag_Ti_min_fit[0]*np.power(t,4) + ag_Ti_min_fit[1]*np.power(t,3) + ag_Ti_min_fit[2]*np.power(t,2) + ag_Ti_min_fit[3]*t + ag_Ti_min_fit[4]
-"""
+    return model(t, ag_Ti_min_fit[0], ag_Ti_min_fit[1], ag_Ti_min_fit[2], ag_Ti_min_fit[3]) 

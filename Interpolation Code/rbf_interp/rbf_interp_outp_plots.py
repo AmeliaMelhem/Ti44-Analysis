@@ -7,6 +7,7 @@ After which, we'll try folding in the SFR to get the total rate
 """ 
 
 from rbf_interp_outp import * 
+import matplotlib.pyplot as plt
 
 ############ Plots ############
 """
