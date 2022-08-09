@@ -40,17 +40,19 @@ df = df.drop([0], axis=0)
 # type_wd1
 # type_wd2
 
-# Defining Salpeter initial mass function 
+# defining Salpeter initial mass function 
 def IMF(m): 
     return m**(-2.35)
-def IMF_antiderivative(m): 
-    return -2.35*m**(-3.35) 
+# defining integrand as m*IMF(m) for total mass
+# and taking the antiderivative of such, 
+def antiderivative(m): 
+    return (-1/0.35)*(m**(-0.35)) 
 
 # approximating total mass by integrating IMF (from 0.08Msun to, say, 150Msun) 
 # this is supposed to represent the lower and upper limits of star masses 
 # alternatively, the SeBa folks used bounds of between 0.8 to 126 Msun
 # but that excludes the lower range of brown dwarfs and such
-total = IMF_antiderivative(150) - IMF_antiderivative(0.08) 
+total = antiderivative(126) - antiderivative(0.8) 
 
 # calculating constant off-set 
 # essential, if we know N(m) for some m
