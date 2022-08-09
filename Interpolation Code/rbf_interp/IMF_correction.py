@@ -13,15 +13,12 @@ which is a power law of -2.35
 ie 
 N(m)dm ~ m^(-2.35) * Delta_m
 for the number stars with masses in range (m , m + Delta_m) 
-
-alternatively cast in terms of Xi (which is stellar mass density??) 
+off by some constant relating to stellar density 
 
 So, 
 As far as I know, 
 I can find this fraction by comparing the total binary WD mass in the sample
 to the integral of the IMF over the entire range of masses 
-but what range of masses to use?
-
 """ 
 
 # includes ...
@@ -49,14 +46,16 @@ def IMF(m):
 def IMF_antiderivative(m): 
     return -2.35*m**(-3.35) 
 
-# Finding maximum and minimum WD masses for integration bounds 
-# Probably should change this later but it's a start 
-max_m = pd.to_numeric(df['Mwd1(Msun)']).max() 
-if max_m < pd.to_numeric(df['Mwd2(Msun)']).max(): 
-    max_m = pd.to_numeric(df['Mwd2(Msun)']).max() 
-min_m = pd.to_numeric(df['Mwd1(Msun)']).min() 
-if min_m > pd.to_numeric(df['Mwd2(Msun)']).min(): 
-    min_m = pd.to_numeric(df['Mwd2(Msun)']).min() 
+# approximating total mass by integrating IMF (from 0.08Msun to, say, 150Msun) 
+# this is supposed to represent the lower and upper limits of star masses 
+# alternatively, the SeBa folks used bounds of between 0.8 to 126 Msun
+# but that excludes the lower range of brown dwarfs and such
+total = IMF_antiderivative(150) - IMF_antiderivative(0.08) 
+
+# calculating constant off-set 
+# essential, if we know N(m) for some m
+# where N(m) is TOTAL number of stars with some mass m
+# we find the constant p such that N(m) = p*(m**-2.35) 
 
 # Excluding systems where at least one WD is not Carbon-Oxygen
 # type 12 -> CO, type 13 -> He, type 14 -> ONe
@@ -66,7 +65,7 @@ df_co = df[df['type_wd2'] == 12.0]
 sum_wdm = pd.to_numeric(df_co['Mwd1(Msun)']).sum()  
 sum_wdm += pd.to_numeric(df_co['Mwd2(Msun)']).sum() 
 
-# calculating approximate mass fraction 
-total = IMF_antiderivative(max_m) - IMF_antiderivative(min_m) 
-mass_frac = (total/sum_wdm)
-print(mass_frac) 
+# calculating mass fraction 
+# total_stellar_mass = (1 + x)*binaryCO-WD_mass
+x = (total/sum_wdm)
+print(x) 
