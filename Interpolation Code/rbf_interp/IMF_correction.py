@@ -8,17 +8,17 @@ Which is represented by
 Total Stellar Mass = (1 + x)*binary_WD_mass 
 where x is a mass fraction of: "other stars mass" / binary_WD_mass 
 
+for the BPS models, 
 the SeBa folks used the Salpeter (1955) initial mass function (IMF) 
-which is a power law of -2.35
-ie 
-N(m)dm ~ m^(-2.35) * Delta_m
-for the number stars with masses in range (m , m + Delta_m) 
-off by some constant relating to stellar density 
+for the range of 0.8 to 126 Msun
+but that excludes brown dwarfs and such 
+moreover, the Salpeter IMF is inaccurate for the range of < 0.5 Msun 
+so here, I'll use the Kroupa IMF which is near-identical to Salpeter in the BPS ranges
 
-So, 
-As far as I know, 
-I can find this fraction by comparing the total binary WD mass in the sample
-to the integral of the IMF over the entire range of masses 
+to calculate total mass, 
+you can integrate over [m*IMF(m)]dm for some range of masses
+here, I'll use 0.08 to 150 Msun
+but this is off by some constant relating to stellar density which I must find 
 """ 
 
 # includes ...
@@ -40,21 +40,15 @@ df = df.drop([0], axis=0)
 # type_wd1
 # type_wd2
 
-# defining Salpeter initial mass function 
-def IMF(m): 
-    return m**(-2.35)
-# defining integrand as m*IMF(m) for total mass
-# and taking the antiderivative of such, 
-def antiderivative(m): 
-    return (-1/0.35)*(m**(-0.35)) 
+# make this hackable to allow for parameters of lower and upper mass 
+def total_mass(): 
+    def antiderivative(m, alpha): 
+        return (1/(2 - alpha))*m**(2 - alpha) 
+    low_mass = antiderivative(0.5, 1.3) - antiderivative(0.08, 1.3)
+    high_mass = antiderivative(150, 2.3) - antiderivative(0.5, 2.3) 
+    return low_mass + high_mass 
 
-# approximating total mass by integrating IMF (from 0.08Msun to, say, 150Msun) 
-# this is supposed to represent the lower and upper limits of star masses 
-# alternatively, the SeBa folks used bounds of between 0.8 to 126 Msun
-# but that excludes the lower range of brown dwarfs and such
-total = antiderivative(126) - antiderivative(0.8) 
-
-# calculating constant off-set 
+# need to calculate constant off-set 
 # essential, if we know N(m) for some m
 # where N(m) is TOTAL number of stars with some mass m
 # we find the constant p such that N(m) = p*(m**-2.35) 
@@ -69,5 +63,6 @@ sum_wdm += pd.to_numeric(df_co['Mwd2(Msun)']).sum()
 
 # calculating mass fraction 
 # total_stellar_mass = (1 + x)*binaryCO-WD_mass
+total = total_mass()
 x = (total/sum_wdm)
 print(x) 
