@@ -17,7 +17,7 @@ so here, I'll use the Kroupa IMF which is near-identical to Salpeter in the BPS 
 
 to calculate total mass, 
 you can integrate over [m*IMF(m)]dm for some range of masses
-here, I'll use 0.08 to 150 Msun
+here, I'll use 0.08 to 150 Msun for the Milky Way 
 but this is off by some constant relating to stellar density which I must find 
 """ 
 
@@ -40,29 +40,50 @@ df = df.drop([0], axis=0)
 # type_wd1
 # type_wd2
 
-# make this hackable to allow for parameters of lower and upper mass 
-def total_mass(): 
+
+def total_mass(m_lo, m_hi, p=1): 
+    # uses Kroupa IMF to calculate total stellar mass in some range 
+    # off by stellar density constant 
     def antiderivative(m, alpha): 
-        return (1/(2 - alpha))*m**(2 - alpha) 
-    low_mass = antiderivative(0.5, 1.3) - antiderivative(0.08, 1.3)
-    high_mass = antiderivative(150, 2.3) - antiderivative(0.5, 2.3) 
-    return low_mass + high_mass 
+        return p*((1/(2 - alpha))*m**(2 - alpha))
+    if m_lo < 0.08 and m_hi > 0.5: 
+        a = antiderivative(0.08, 0.3) - antiderivative(m_lo, 0.3) 
+        b = antiderivative(0.5, 1.3) - antiderivative(0.08, 0.3)
+        c = antiderivative(m_hi, 2.3) - antiderivative(0.5, 2.3) 
+        return a + b + c
+    elif (m_lo >= 0.08 and m_lo < 0.5) and m_hi > 0.5: 
+        b = antiderivative(0.5, 1.3) - antiderivative(m_lo, 1.3) 
+        c = antiderivative(m_hi, 2.3) - antiderivative(0.5, 2.3) 
+        return b + c
+    else: # ( if m_lo >= 0.5 and m_hi > 0.5: )
+        c = antiderivative(m_hi, 2.3) - antiderivative(m_lo, 2.3) 
+        return c
+
 
 # need to calculate constant off-set 
-# essential, if we know N(m) for some m
+# essential, if we know N(m) for some (or several) m
 # where N(m) is TOTAL number of stars with some mass m
-# we find the constant p such that N(m) = p*(m**-2.35) 
+# we find the constant p such that N(m) = p*(m**alpha) 
+# alpha may be piecewise in Kroupa IMF case 
+# BUT! the SeBa people state they assume ALL stars are members of binary systems from their IMF 
+# so, I can find the constant by:  Integral[m*IMF(m)dm] = total binary WD mass ???
+sum_binary_wd = pd.to_numeric(df['Mwd1(Msun)']).sum() 
+sum_binary_wd += pd.to_numeric(df['Mwd2(Msun)']).sum() 
+p_SeBa = sum_binary_wd / total_mass(0.8, 126) 
 
-# Excluding systems where at least one WD is not Carbon-Oxygen
+
+# Now, excluding systems where at least one WD is not Carbon-Oxygen
 # type 12 -> CO, type 13 -> He, type 14 -> ONe
 df_co = df[df['type_wd1'] == 12.0] 
 df_co = df[df['type_wd2'] == 12.0] 
 
-sum_wdm = pd.to_numeric(df_co['Mwd1(Msun)']).sum()  
-sum_wdm += pd.to_numeric(df_co['Mwd2(Msun)']).sum() 
+sum_binary_co_wd = pd.to_numeric(df_co['Mwd1(Msun)']).sum()  
+sum_binary_co_wd += pd.to_numeric(df_co['Mwd2(Msun)']).sum() 
+
 
 # calculating mass fraction 
 # total_stellar_mass = (1 + x)*binaryCO-WD_mass
-total = total_mass()
-x = (total/sum_wdm)
+x = sum_binary_wd/sum_binary_co_wd - 1
+print(x) 
+x = total_mass(0.8, 126, p_SeBa)/sum_binary_co_wd - 1
 print(x) 
