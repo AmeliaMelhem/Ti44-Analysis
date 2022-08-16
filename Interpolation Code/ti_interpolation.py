@@ -18,7 +18,7 @@ Found at https://doi.org/10.1051/0004-6361/202039954
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from interpFunctions import linearInterp
+from groupFunctions import linearInterp
 
 # Idea for future Amy: have both files be found at once instead of needing to run the code twice
 file = 0 # 0 for first file(aa), 1 for second(ag)

@@ -13,8 +13,8 @@ was orders of magnitude different
 import numpy as np
 import matplotlib.pyplot as plt
 
-leung_data = np.loadtxt('Ti_He_Leung_T13.txt', usecols=(1, 2, 3, 4, 5, 6, 7)) 
-gronow_data = np.loadtxt('Ti_He_Gronow.txt', skiprows = 1, usecols=(1, 2, 3, 4))
+leung_data = np.loadtxt('../Input Data/Ti_He_Leung_T13.txt', usecols=(1, 2, 3, 4, 5, 6, 7)) 
+gronow_data = np.loadtxt('../Input Data/Ti_He_Gronow.txt', skiprows = 1, usecols=(1, 2, 3, 4))
 
 
 # row 2 is He mass and row 3 is Ti44 mass

@@ -37,10 +37,10 @@ TiMass2ag = nearestNeighborLinearInterp(inputData, Mass2ag)
 x = np.linspace(np.amin(Mass1aa), np.amax(Mass1aa), len(TiMass1aa))
 y = TiMass1aa
 
-plt.plot(x, y, 'b')
-# plt.plot(inputData[0,:], inputData[1,:], "r+")
-# plt.plot(GronowData[0,:], GronowData[1,:], "b+")
-# plt.plot(LeungData[0,:], LeungData[1,:], "g+")
+# plt.plot(x, y, 'b')
+plt.plot(inputData[0,:], inputData[1,:], "r+")
+plt.plot(GronowData[0,:], GronowData[1,:], "b+")
+plt.plot(LeungData[0,:], LeungData[1,:], "g+")
 
 
 plt.show()

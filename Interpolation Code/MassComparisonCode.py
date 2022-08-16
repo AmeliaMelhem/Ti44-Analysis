@@ -16,10 +16,10 @@ import numpy as np
 file = 1 # 0 for first file(aa), 1 for second(ag)
 
 if file == 1:
-    data = np.loadtxt("./noDashSeBa_aa_with_He.txt")    
+    data = np.loadtxt("../Output Data/noDashSeBa_aa_with_He.txt")    
     fileName = 'Mass_Comparison_aa'
 else: 
-    data = np.loadtxt("./noDashSeBa_ag_with_He.txt")
+    data = np.loadtxt("../Output Data/noDashSeBa_ag_with_He.txt")
     fileName = 'Mass_Comparison_ag'
 
 
