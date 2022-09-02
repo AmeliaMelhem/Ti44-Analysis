@@ -10,15 +10,24 @@ where x is a mass fraction of: "other stars mass" / binary_WD_mass
 
 for the BPS models, 
 the SeBa folks used the Salpeter (1955) initial mass function (IMF) 
-for the range of 0.8 to 126 Msun
-but that excludes brown dwarfs and such 
+for the range of 0.1 to 100 Msun
+but that excludes brown dwarfs and higher mass stars and such 
 moreover, the Salpeter IMF is inaccurate for the range of < 0.5 Msun 
-so here, I'll use the Kroupa IMF which is near-identical to Salpeter in the BPS ranges
 
 to calculate total mass, 
 you can integrate over [m*IMF(m)]dm for some range of masses
-here, I'll use 0.08 to 150 Msun for the Milky Way 
+here, I'll use 0.1 to 126 Msun for the Milky Way 
 but this is off by some constant relating to stellar density which I must find 
+
+UPDATE: 
+I can find the constant xi_0 by knowing that, 
+stars with initial masses in range 0.08 -> 12 are expected to form WDs 
+and stars with initial masses in range 0.8 -> 8 form CO WDs specifically
+ie, for a system with N CO WDs
+we have N = \int_{0.8Msun}^{8Msun} IMF(m)dm
+
+Also, found: websites.pmc.ucsc.edu/~glatz/astr_112/lectures/notes19.pdf
+which has helped my understanding
 """ 
 
 # includes ...
@@ -41,49 +50,54 @@ df = df.drop([0], axis=0)
 # type_wd2
 
 
-def total_mass(m_lo, m_hi, p=1): 
-    # uses Kroupa IMF to calculate total stellar mass in some range 
-    # off by stellar density constant 
-    def antiderivative(m, alpha): 
-        return p*((1/(2 - alpha))*m**(2 - alpha))
-    if m_lo < 0.08 and m_hi > 0.5: 
-        a = antiderivative(0.08, 0.3) - antiderivative(m_lo, 0.3) 
-        b = antiderivative(0.5, 1.3) - antiderivative(0.08, 0.3)
-        c = antiderivative(m_hi, 2.3) - antiderivative(0.5, 2.3) 
-        return a + b + c
-    elif (m_lo >= 0.08 and m_lo < 0.5) and m_hi > 0.5: 
-        b = antiderivative(0.5, 1.3) - antiderivative(m_lo, 1.3) 
-        c = antiderivative(m_hi, 2.3) - antiderivative(0.5, 2.3) 
-        return b + c
-    else: # ( if m_lo >= 0.5 and m_hi > 0.5: )
-        c = antiderivative(m_hi, 2.3) - antiderivative(m_lo, 2.3) 
-        return c
-
-
-# need to calculate constant off-set 
-# essential, if we know N(m) for some (or several) m
-# where N(m) is TOTAL number of stars with some mass m
-# we find the constant p such that N(m) = p*(m**alpha) 
-# alpha may be piecewise in Kroupa IMF case 
-# BUT! the SeBa people state they assume ALL stars are members of binary systems from their IMF 
-# so, I can find the constant by:  Integral[m*IMF(m)dm] = total binary WD mass ???
-sum_binary_wd = pd.to_numeric(df['Mwd1(Msun)']).sum() 
-sum_binary_wd += pd.to_numeric(df['Mwd2(Msun)']).sum() 
-p_SeBa = sum_binary_wd / total_mass(0.8, 126) 
-
-
-# Now, excluding systems where at least one WD is not Carbon-Oxygen
+# Splicing dataframes between those with/without non-CO WDs 
 # type 12 -> CO, type 13 -> He, type 14 -> ONe
 df_co = df[df['type_wd1'] == 12.0] 
 df_co = df[df['type_wd2'] == 12.0] 
+
+# Calculating mass sums of both dataframes 
+sum_binary_wd = pd.to_numeric(df['Mwd1(Msun)']).sum() 
+sum_binary_wd += pd.to_numeric(df['Mwd2(Msun)']).sum() 
 
 sum_binary_co_wd = pd.to_numeric(df_co['Mwd1(Msun)']).sum()  
 sum_binary_co_wd += pd.to_numeric(df_co['Mwd2(Msun)']).sum() 
 
 
+# Calculating constant xi_0
+N_wd = 2*len(df) # twice ~120,000
+N_CO_wd = 2*len(df_co) # twice ~40,000
+# I added factor of two as is in binary systems 
+
+xi_0_CO = N_CO_wd / ((8**(-1.35))/(-1.35) - (0.5**(-1.35))/(-1.35))
+print(f"xi_0 from CO WD estimate: {xi_0_CO}")  
+xi_0 = N_wd / ((12**(-1.35))/(-1.35) - (0.1**(-1.35))/(-1.35))
+print(f"xi_0 from total WD estimate: {xi_0}")  
+"""
+Values for xi_0 are slightly contradictory when considering: 
+    m in range (0.1, 12) become WDs
+        associated mass-fraction: 0.567
+    m in range (0.8, 8) become CO WDs
+        associated mass-fraction: 8.276
+I have been hung up on this weird discrepancy for a while,
+but for now I'll take the value of 0.567 to be more "reasonable"????
+"""
+
 # calculating mass fraction 
-# total_stellar_mass = (1 + x)*binaryCO-WD_mass
-x = sum_binary_wd/sum_binary_co_wd - 1
-print(x) 
-x = total_mass(0.8, 126, p_SeBa)/sum_binary_co_wd - 1
-print(x) 
+def total_init_mass(m_lo, m_hi, xi): 
+    # integrand is m*IMF(m) 
+    # ie xi_0*m^(-1.35) 
+    return (xi/(-0.35))*(m_hi**(-0.35) - m_lo**(-0.35)) 
+
+x_CO = (total_init_mass(0.1, 100, xi_0_CO) / sum_binary_co_wd) - 1
+print(f"x from CO WD estimate: {x_CO}") 
+x = (total_init_mass(0.1, 100, xi_0) / sum_binary_co_wd) - 1
+print(f"x from total WD estimate: {x}") 
+
+"""
+Next steps: 
+normalize truncated sample to mass fraction 
+to achieve Ti44 / mass / time 
+then, 
+using approx. constant SFR of 10 Msun / year 
+to estimate net Ti44 produced per time 
+""" 
