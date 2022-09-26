@@ -19,7 +19,6 @@ you can integrate over [m*IMF(m)]dm for some range of masses
 here, I'll use 0.1 to 126 Msun for the Milky Way 
 but this is off by some constant relating to stellar density which I must find 
 
-UPDATE: 
 I can find the constant xi_0 by knowing that, 
 stars with initial masses in range 0.08 -> 12 are expected to form WDs 
 and stars with initial masses in range 0.8 -> 8 form CO WDs specifically
@@ -33,6 +32,8 @@ which has helped my understanding
 # includes ...
 import pandas as pd
 import numpy as np
+from scipy.integrate import quad
+
 
 # Importing data 
 df = pd.read_csv("../../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data", delim_whitespace=True, index_col=False)  
@@ -62,42 +63,60 @@ sum_binary_wd += pd.to_numeric(df['Mwd2(Msun)']).sum()
 sum_binary_co_wd = pd.to_numeric(df_co['Mwd1(Msun)']).sum()  
 sum_binary_co_wd += pd.to_numeric(df_co['Mwd2(Msun)']).sum() 
 
+###################################################
+
+def imf(m, xi): 
+    if m < 0.08: 
+        alpha = 0.3
+    elif m >= 0.08 and m < 0.5: 
+        alpha = 1.3
+    elif m >= 0.5: 
+        alpha = 2.3
+    return xi*m**(-1 * alpha) 
+
+def IMF_integral(m_lo, m_hi, xi, find_mass=True): 
+    # Integrates IMF over range m_lo to m_hi
+    # find_mass bool determines what integral will yield
+    #   t: total mass over said range
+    #   f: total number of stars in range
+    def integrand(m, xi): 
+        if find_mass: 
+            return m*imf(m, xi)
+        else: 
+            return imf(m, xi)
+    return quad(integrand, m_lo, m_hi, args=(xi))[0]
 
 # Calculating constant xi_0
 N_wd = 2*len(df) # twice ~120,000
 N_CO_wd = 2*len(df_co) # twice ~40,000
 # I added factor of two as is in binary systems 
 
-xi_0_CO = N_CO_wd / ((8**(-1.35))/(-1.35) - (0.5**(-1.35))/(-1.35))
+xi_0_CO = N_CO_wd / IMF_integral(0.8, 8, 1, find_mass=False) 
 print(f"xi_0 from CO WD estimate: {xi_0_CO}")  
-xi_0 = N_wd / ((12**(-1.35))/(-1.35) - (0.1**(-1.35))/(-1.35))
-print(f"xi_0 from total WD estimate: {xi_0}")  
-"""
-Values for xi_0 are slightly contradictory when considering: 
-    m in range (0.1, 12) become WDs
-        associated mass-fraction: 0.567
-    m in range (0.8, 8) become CO WDs
-        associated mass-fraction: 8.276
-I have been hung up on this weird discrepancy for a while,
-but for now I'll take the value of 0.567 to be more "reasonable"????
-"""
+xi_0_tot = N_wd / IMF_integral(0.08, 12, 1, find_mass=False) 
+print(f"xi_0 from total WD estimate: {xi_0_tot}")  
 
-# calculating mass fraction 
-def total_init_mass(m_lo, m_hi, xi): 
-    # integrand is m*IMF(m) 
-    # ie xi_0*m^(-1.35) 
-    return (xi/(-0.35))*(m_hi**(-0.35) - m_lo**(-0.35)) 
+# Calculating binary fraction f_bin = N_b / (N_b + N_s) 
+# Dan advised the mass range of 0.1 to 100 Msun as per SeBa run
+# As opposed to 0.08 to 125 Msun as per all possible masses 
+f_bin = N_wd / IMF_integral(0.08, 125, xi_0_CO, find_mass=False) 
+print(f"f_bin with CO estimate: {f_bin}")
+f_bin = N_wd / IMF_integral(0.08, 125, xi_0_tot, find_mass=False) 
+print(f"f_bin with total estimate: {f_bin}")
+# The discrepancy between found f_bin and known 50% value is larger with smaller range
+# But, in any case, this demonstrates the xi_0 from CO estimate as more reasonable
 
-x_CO = (total_init_mass(0.1, 100, xi_0_CO) / sum_binary_co_wd) - 1
-print(f"x from CO WD estimate: {x_CO}") 
-x = (total_init_mass(0.1, 100, xi_0) / sum_binary_co_wd) - 1
-print(f"x from total WD estimate: {x}") 
+# Now finding xi such that the f_bin is assumed to be 50% 
+xi_0 = N_wd / (0.5 * IMF_integral(0.08, 125, 1, find_mass=False)) 
 
-"""
-Next steps: 
-normalize truncated sample to mass fraction 
-to achieve Ti44 / mass / time 
-then, 
-using approx. constant SFR of 10 Msun / year 
-to estimate net Ti44 produced per time 
-""" 
+# Now calculating ~mass~ fraction as opposed to that by number of stars 
+# x_co_bin = mass of binary CO white dwarfs / total mass formed ~ 0.14
+# x_wd_bin = mass of all binary white dwards / total mass formed ~ 0.325
+x_co_bin = sum_binary_co_wd / IMF_integral(0.08, 125, xi_0, find_mass=True) 
+print(f"mass fraction of binary CO WDs per total mass: {x_co_bin}") 
+x_wd_bin = sum_binary_wd / IMF_integral(0.08, 125, xi_0, find_mass=True) 
+print(f"mass fraction of all binary WDs per total mass: {x_wd_bin}") 
+
+# According to SeBa people: 
+total_mass = 38499996 #Msun
+# assuming a 50% binary fraction 
