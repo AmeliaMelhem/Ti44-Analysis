@@ -107,7 +107,17 @@ print(f"f_bin with total estimate: {f_bin}")
 # But, in any case, this demonstrates the xi_0 from CO estimate as more reasonable
 
 # Now finding xi such that the f_bin is assumed to be 50% 
-xi_0 = N_wd / (0.5 * IMF_integral(0.08, 125, 1, find_mass=False)) 
+xi_0 = N_wd / (0.5 * IMF_integral(0.1, 100, 1, find_mass=False)) 
+print(xi_0) 
+
+# Or finding xi such that total mass is known
+# According to SeBa people, for this simulation: 
+total_mass = 38499996
+xi_0_alt = total_mass / IMF_integral(0.08, 125, 1, find_mass=True) 
+print(xi_0_alt) 
+# This latter value of xi_0 is off by almost exactly factor of 100
+# Questions: 
+# What mass range did SeBa use? They used Salpeter IMF? 
 
 # Now calculating ~mass~ fraction as opposed to that by number of stars 
 # x_co_bin = mass of binary CO white dwarfs / total mass formed ~ 0.14
@@ -116,7 +126,3 @@ x_co_bin = sum_binary_co_wd / IMF_integral(0.08, 125, xi_0, find_mass=True)
 print(f"mass fraction of binary CO WDs per total mass: {x_co_bin}") 
 x_wd_bin = sum_binary_wd / IMF_integral(0.08, 125, xi_0, find_mass=True) 
 print(f"mass fraction of all binary WDs per total mass: {x_wd_bin}") 
-
-# According to SeBa people: 
-total_mass = 38499996 #Msun
-# assuming a 50% binary fraction 
