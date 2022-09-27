@@ -12,6 +12,7 @@ The functions resemble the form:
     Ti/CO(t) ~ (a*x + b)*exp(-c*x) + d
 And represent the impulse response of Ti produced (Ti mass per stellar mass) 
 from a single burst of star formation 
+normalized to total CO mass involved in production of said Ti
 
 Concerns: 
 There is a point, near the end of the sample's domain (at about 14000 Myr) 
@@ -23,8 +24,6 @@ So we won't be considering times beyond this domain, thus it shouldn't matter to
 """ 
 
 import numpy as np
-import matplotlib.pyplot as plt
-
 params = np.loadtxt('rbf_interp_outp_params.txt', skiprows=1, usecols=(1,2,3,4)) 
 
 aa_max = params[:,0] 

@@ -63,9 +63,11 @@ sum_binary_wd += pd.to_numeric(df['Mwd2(Msun)']).sum()
 sum_binary_co_wd = pd.to_numeric(df_co['Mwd1(Msun)']).sum()  
 sum_binary_co_wd += pd.to_numeric(df_co['Mwd2(Msun)']).sum() 
 
+print('\n\n\n') # Weird Pandas error so this makes more readable
+
 ###################################################
 
-def imf(m, xi): 
+def Kroupa_IMF(m, xi): 
     if m < 0.08: 
         alpha = 0.3
     elif m >= 0.08 and m < 0.5: 
@@ -74,55 +76,48 @@ def imf(m, xi):
         alpha = 2.3
     return xi*m**(-1 * alpha) 
 
-def IMF_integral(m_lo, m_hi, xi, find_mass=True): 
+def Salpeter_IMF(m, xi): 
+    return xi*(m**(-2.35)) 
+
+def IMF_integral(m_lo, m_hi, xi, fn, find_mass=True): 
     # Integrates IMF over range m_lo to m_hi
     # find_mass bool determines what integral will yield
     #   t: total mass over said range
     #   f: total number of stars in range
     def integrand(m, xi): 
         if find_mass: 
-            return m*imf(m, xi)
+            return m*fn(m, xi)
         else: 
-            return imf(m, xi)
+            return fn(m, xi)
     return quad(integrand, m_lo, m_hi, args=(xi))[0]
 
 # Calculating constant xi_0
 N_wd = 2*len(df) # twice ~120,000
 N_CO_wd = 2*len(df_co) # twice ~40,000
-# I added factor of two as is in binary systems 
-
-xi_0_CO = N_CO_wd / IMF_integral(0.8, 8, 1, find_mass=False) 
+# I added factor of two as it is a binary system 
+# and we assume f_bin = N_b / (N_b + N_s) = 50% (effectively another 2x) 
+xi_0_CO = N_CO_wd / (0.5 * IMF_integral(0.5, 8, 1, Kroupa_IMF, find_mass=False)) 
 print(f"xi_0 from CO WD estimate: {xi_0_CO}")  
-xi_0_tot = N_wd / IMF_integral(0.08, 12, 1, find_mass=False) 
+xi_0_tot = N_wd / (0.5 * IMF_integral(0.08, 12, 1, Kroupa_IMF, find_mass=False))
 print(f"xi_0 from total WD estimate: {xi_0_tot}")  
+# They are somewhat similar so let us average 
+xi_0_avg = 0.5 * (xi_0_CO + xi_0_tot) 
 
-# Calculating binary fraction f_bin = N_b / (N_b + N_s) 
-# Dan advised the mass range of 0.1 to 100 Msun as per SeBa run
-# As opposed to 0.08 to 125 Msun as per all possible masses 
-f_bin = N_wd / IMF_integral(0.08, 125, xi_0_CO, find_mass=False) 
-print(f"f_bin with CO estimate: {f_bin}")
-f_bin = N_wd / IMF_integral(0.08, 125, xi_0_tot, find_mass=False) 
-print(f"f_bin with total estimate: {f_bin}")
-# The discrepancy between found f_bin and known 50% value is larger with smaller range
-# But, in any case, this demonstrates the xi_0 from CO estimate as more reasonable
 
-# Now finding xi such that the f_bin is assumed to be 50% 
-xi_0 = N_wd / (0.5 * IMF_integral(0.1, 100, 1, find_mass=False)) 
-print(xi_0) 
-
-# Or finding xi such that total mass is known
+# This dissented quite a bit from the prior method
+# But, finding xi such that total mass is known
 # According to SeBa people, for this simulation: 
 total_mass = 38499996
-xi_0_alt = total_mass / IMF_integral(0.08, 125, 1, find_mass=True) 
-print(xi_0_alt) 
-# This latter value of xi_0 is off by almost exactly factor of 100
+xi_0_alt = total_mass / IMF_integral(0.1, 100, 1, Salpeter_IMF, find_mass=True) 
+print(f"xi_0 from total mass: {xi_0_alt}") 
 # Questions: 
 # What mass range did SeBa use? They used Salpeter IMF? 
 
+
 # Now calculating ~mass~ fraction as opposed to that by number of stars 
-# x_co_bin = mass of binary CO white dwarfs / total mass formed ~ 0.14
-# x_wd_bin = mass of all binary white dwards / total mass formed ~ 0.325
-x_co_bin = sum_binary_co_wd / IMF_integral(0.08, 125, xi_0, find_mass=True) 
+# x_co_bin = mass of binary CO white dwarfs / total initial mass formed ~ 0.14
+# x_wd_bin = mass of all binary white dwards / total initial mass formed ~ 0.325
+x_co_bin = sum_binary_co_wd / IMF_integral(0.1, 100, xi_0_avg, Kroupa_IMF, find_mass=True) 
 print(f"mass fraction of binary CO WDs per total mass: {x_co_bin}") 
-x_wd_bin = sum_binary_wd / IMF_integral(0.08, 125, xi_0, find_mass=True) 
+x_wd_bin = sum_binary_wd / IMF_integral(0.1, 100, xi_0_avg, Kroupa_IMF, find_mass=True) 
 print(f"mass fraction of all binary WDs per total mass: {x_wd_bin}") 
