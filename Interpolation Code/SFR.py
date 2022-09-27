@@ -36,7 +36,7 @@ plt.plot(BuldgeZ, BuldgeMass, "orange", label = "Buldge SFR")
 plt.plot(DiscZ, DiscMass, "blue", label = "Disc SFR")
 plt.legend()
 plt.ylabel("Star Formation Rate (Solar Masses/year)")
-plt.xlabel("Redshit")
+plt.xlabel("Redshift")
 plt.title("Milky Way SFR with Variable Redshift")
 
 plt.savefig("../Plots/" + "MilkyWay_SFR")
