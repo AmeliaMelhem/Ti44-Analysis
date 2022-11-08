@@ -16,7 +16,7 @@ class RBF_interp:
     # Object for RBF interpolation
     # call constructor once then call interp method for each desired point
     
-    def __init__(self, pts, vals, func = "multiquadric", scale = 0.0001, norm = False): 
+    def __init__(self, pts, vals, func = "multiquadric", scale = 0, norm = False): 
         # Constructor:
         # Initializes RBF values and w vector for known points 
         # @pts:     n x dim matrix for the data points
@@ -37,8 +37,6 @@ class RBF_interp:
         
         # Now to populate the RBF matrix and "r.h.s." vector 
         # the r.h.s. vector is just known output vals in non-normalized case
-        i = 0 
-        j = 0
         rbf_mat = np.zeros((self.n, self.n)) 
         rhs = np.zeros(self.n) 
         for i in range(self.n): 
@@ -59,7 +57,6 @@ class RBF_interp:
         # returns the interpolated function value at a dim-dimensional point
         if len(pt) != self.dim: 
             raise ValueError('Invalid input size') 
-        i = 0
         sum_w = 0 # sum of rbf_vals with weighting values w
         sum_ = 0 # sum of rbf_vals without w for use in normalized case 
         for i in range(self.n): 
@@ -75,14 +72,12 @@ class RBF_interp:
     def arr_interp(self, inp): 
         # returns an array of interpolated values from input pts arr
         # pts has dim columns, and any number of rows 
-        outp = [] 
-        for i in range(np.shape(inp)[0]): 
-            outp.append(self.interp(inp[i,:])) 
+        outp = [self.interp(inp[i,:]) for i in range(np.shape(inp)[0])] 
         return outp
 
 
     def rbf_fn(self, r): 
-        # radial basis function 
+        # chosen radial basis function 
         match self.func: 
             case "multiquadric": 
                 return np.sqrt(r**2 + self.scale**2)
@@ -97,16 +92,14 @@ class RBF_interp:
     def rad(self, pt1, pt2):
         # calculates euclidean distance 
         sum_xi = 0
-        i = 0
         for i in range(self.dim): 
             sum_xi += (pt1[i] - pt2[i])**2
         return np.sqrt(sum_xi) 
 
 
-    def err(self): 
+    def error(self): 
         # calculates average error for the interpolated function 
         errs = [] 
-        i = 0
         for i in range(self.n): 
             temp_pts = np.delete(self.pts, i, 0) 
             temp_vals = np.delete(self.vals, i, 0) 
@@ -115,13 +108,16 @@ class RBF_interp:
         return np.mean(errs) 
         
 
-    def optimize(self): 
+    def optimize(self, lo = 0, hi = 0): 
         # modifies self.scale such that self.err() is minimized 
+        # lo/hi parameters augment the range of scale factors tested
+
+        # sets 'real' default value for hi as 0 would be nonsensical
+        if hi == 0: 
+            hi = max(self.vals)
 
         # creates dict of scales (values) and corresponding error (keys)
-        # linspace arr params currently apply only to ti_interp data 
-        # should determine a way to set this generally 
-        scales = np.linspace(0.000001, 0.01, 50)
+        scales = np.linspace(lo, hi, 2*len(vals))
         err_scl = {} 
         for i in scales: 
             temp = RBF_interp(self.pts, self.vals, self.func, i, self.norm) 

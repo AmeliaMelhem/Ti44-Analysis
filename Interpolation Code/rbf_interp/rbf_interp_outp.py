@@ -4,12 +4,6 @@ JG
 Utilizing the most sensible RBF interpolation to output Ti/e+ data from the SeBa sample 
 Using the shortened sample that arose from NANs in finding He mass 
 
-Here, I have plots: 
-e+ produced at each time (summing over which would yield total e+) 
-and, total e+ produced at some time 
-
-I got # of positrons from Ti44 mass with Amy's positronFromTi function 
-
 Justification for Ti44 mass interpolation: 
 Upon fixing the error calculation for the SciPy routine, 
 I found it to be about twice that of any RBF interpolation (at around 230%) 
@@ -29,31 +23,21 @@ and was optimized precisely with scale-factor set to zero, with no strange behav
 so we have, very simply, phi(r) = |r| 
 and our fit is just a linear combination of |r| that spans dim(# of data points) 
 """ 
-""" 
-Updates from Aug 3: 
-Attempts to make relationship intensive by outputting Ti^44 mass...
-In units of Ti^44 mass per stellar mass that produced said Ti^44 
-Then, 
-Plotting said data over time to potentially yield some fit 
-
-Also, commenting out some extraneous blocks to make the relevant bits run faster 
-""" 
 ####################
 
 
 # includes ...
-import sys
-sys.path.append('../')
 from rbf_interp import * 
 #import numpy as np (within rbf_interp) 
 import pandas as pd 
 from scipy.optimize import curve_fit 
+import matplotlib.pyplot as plt
 
 
 ######### Importing Data ############
 
 # Data from Gronow and Leung papers 
-ti_data = np.loadtxt("../../Input Data/he_co_ti_dat.txt") 
+ti_data = np.loadtxt('../../Input Data/he_co_ti_dat.txt') 
 pts = ti_data[:,0:2] # Helium and Core masses 
 vals = ti_data[:,2] # Ti44 masses 
 
@@ -178,3 +162,31 @@ def ag_TImax_fn(t):
     return model(t, ag_Ti_max_fit[0], ag_Ti_max_fit[1], ag_Ti_max_fit[2], ag_Ti_max_fit[3]) 
 def ag_TImin_fn(t): 
     return model(t, ag_Ti_min_fit[0], ag_Ti_min_fit[1], ag_Ti_min_fit[2], ag_Ti_min_fit[3]) 
+
+
+################ Plots
+# Plotting total Ti44 produced over time
+# aa 
+plt.scatter(aa_times, aa_totalTi_max, color = 'Red', alpha = 0.5, label = 'He max') 
+plt.scatter(aa_times, aa_totalTi_min, color = 'Blue', alpha = 0.5, label = 'He min') 
+plt.plot(aa_times_lin, aa_TImax_fn(aa_times_lin), color = 'Red') 
+plt.plot(aa_times_lin, aa_TImin_fn(aa_times_lin), color = 'Blue') 
+plt.title("Total Ti44 produced per total CO (aa sample)") 
+plt.xlabel("Time (Myr)") 
+plt.ylabel("Ti44 mass (Msun)") 
+plt.legend() 
+plt.show()
+# plt.savefig("../../Plots/rbf_interp_plots/results/aaTi_total") 
+# plt.close("all") 
+# ag
+plt.scatter(ag_times, ag_totalTi_max, color = 'Red', alpha = 0.5, label = 'He max') 
+plt.scatter(ag_times, ag_totalTi_min, color = 'Blue', alpha = 0.5, label = 'He min') 
+plt.plot(ag_times_lin, ag_TImax_fn(ag_times_lin), color = 'Red') 
+plt.plot(ag_times_lin, ag_TImin_fn(ag_times_lin), color = 'Blue') 
+plt.title("Total Ti44 produced per total CO (ag sample)") 
+plt.xlabel("Time (Myr)") 
+plt.ylabel("Ti44 mass (Msun)") 
+plt.legend() 
+plt.show()
+#plt.savefig("../../Plots/rbf_interp_plots/results/agTi_total") 
+#plt.close("all") 
