@@ -31,6 +31,7 @@ from rbf_interp import *
 #import numpy as np (within rbf_interp) 
 import pandas as pd 
 from scipy.optimize import curve_fit 
+from scipy.integrate import quad
 import matplotlib.pyplot as plt
 
 
@@ -103,11 +104,65 @@ ag_ti_min += np.array(ti_interp.arr_interp(ag_wd2min_pts))
 
 #################
 
+# 11/07
+# instead of normalization method commented out below, I'll try using the DTD from Crocker et al paper
+# which they had arbitrarily scaled
+# and normalize it such that, when integrated over Milky Way's life, it equals the grand total Ti produced
+
+sum_aa_Ti_max = np.sum(aa_ti_max)
+sum_ag_Ti_max = np.sum(ag_ti_max)
+sum_aa_Ti_min = np.sum(aa_ti_min)
+sum_ag_Ti_min = np.sum(ag_ti_min)
+
+def DTD_Ti(t, sum_Ti, tp = 0.3, a = 4, s = -1): 
+    # default parameters are those used by Crocker et al for SN Ia
+    # tp is in Gyrs
+    def DTD_arbitrary(t): 
+        return ((t/tp)**a)/((t/tp)**(a-s)+1)
+    A = sum_Ti / quad(DTD_arbitrary, 0, 13.6)[0]
+    return A*DTD_arbitrary(t)
+
+def test_DTD(t):
+    return DTD_Ti(t, sum_aa_Ti_max)
+# print(sum_aa_Ti_max)
+# returned 20 Msun Ti total
+
+def const_SFR(t):
+    return 10e-8
+
+x = 0.15 # fraction of binary CO WD mass per total init. mass
+total_mass = 38499996 # total mass used in SeBa sample
+
+def TOTAL_TI_RATE(t, DTD_fn, SFR_fn):
+    def integrand(tp):
+        if t >= tp:
+            return DTD_fn(t-tp) * SFR_fn(t)
+        else:
+            return 0
+    return quad(integrand, 0, 13.6)[0]
+
+time_arr = np.linspace(0, 13.6, 100)
+# dtd_arr = [test_DTD(time) for time in time_arr]
+ti_rate_arr = [TOTAL_TI_RATE(time, test_DTD, const_SFR) for time in time_arr]
+
+plt.plot(time_arr, ti_rate_arr)
+plt.show()
+
+# Try using the DTD from the data itself
+# Maybe normalize it to total Ti produced from the sample
+# Then scale the SFR to adjust for the Milky Way mass discrepancy
+
+
+
+#############################################
+# Disregard the following for now
+"""
 # Function to sum over values of an array
 # Returning an array with entries as sum up to that point 
 # Update Aug 3: Normalized to total CO mass at each point 
-def total_arr(ti_arr, wd1_pts_arr, wd2_pts_arr): 
+def total_ti(ti_arr, wd1_pts_arr, wd2_pts_arr, co_norm = True): 
     # inputs must be numpy arrays for entrywise addition to work 
+    # optional parameter determines if normalized to CO mass in mergers
     wd_mass_sum_arr = wd1_pts_arr[:,1] + wd2_pts_arr[:,1] 
     sum_ti = 0
     sum_co = 0 
@@ -115,14 +170,17 @@ def total_arr(ti_arr, wd1_pts_arr, wd2_pts_arr):
     for i in range(np.shape(ti_arr)[0]): 
         sum_ti += ti_arr[i]
         sum_co += wd_mass_sum_arr[i]
-        total[i] = sum_ti / sum_co
+        if co_norm: 
+            total[i] = sum_ti / sum_co
+        else
+            total[i] = sum_ti
     return total
 
 # Finding total Ti44 produced over time 
-aa_totalTi_max = total_arr(aa_ti_max, aa_wd1max_pts, aa_wd2max_pts) 
-aa_totalTi_min = total_arr(aa_ti_min, aa_wd1min_pts, aa_wd2min_pts) 
-ag_totalTi_max = total_arr(ag_ti_max, ag_wd1max_pts, ag_wd2max_pts) 
-ag_totalTi_min = total_arr(ag_ti_min, ag_wd1min_pts, ag_wd2min_pts) 
+aa_totalTi_max = total_ti(aa_ti_max, aa_wd1max_pts, aa_wd2max_pts) 
+aa_totalTi_min = total_ti(aa_ti_min, aa_wd1min_pts, aa_wd2min_pts) 
+ag_totalTi_max = total_ti(ag_ti_max, ag_wd1max_pts, ag_wd2max_pts) 
+ag_totalTi_min = total_ti(ag_ti_min, ag_wd1min_pts, ag_wd2min_pts) 
 
 ###### Fits ######
 
@@ -147,7 +205,7 @@ params = {
 } 
 params_df = pd.DataFrame(params) 
 params_df.set_index('param', inplace=True) 
-params_df.to_csv('rbf_interp_outp_params.txt', sep = ' ') 
+#params_df.to_csv('rbf_interp_outp_params.txt', sep = ' ') 
 
 # Linspace arrays for plotting 
 aa_times_lin = np.linspace(np.amin(aa_times), np.amax(aa_times), 150) 
@@ -190,3 +248,4 @@ plt.legend()
 plt.show()
 #plt.savefig("../../Plots/rbf_interp_plots/results/agTi_total") 
 #plt.close("all") 
+"""

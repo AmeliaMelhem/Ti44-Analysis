@@ -22,6 +22,12 @@ x = 0.1488 # fraction of binary CO WD mass per total init. mass
 def const_SFR(t): 
     return 10
 
+def DTD(t, tp = 0.3, a = 4, s = -1): 
+    # delay time distribution
+    # default values are those chosen by Crocker et al for SN Ia 
+    # with tp in Gyrs
+    return ((t/tp)**a)/((t/tp)**(a-s)+1)
+
 def TOTAL_TI_RATE(t, Ti_fn, SFR_fn): 
     def integrand(tp): 
         if t >= tp: 
@@ -31,9 +37,8 @@ def TOTAL_TI_RATE(t, Ti_fn, SFR_fn):
     return quad(integrand, 0, 13.6*(10**9))[0]
 
 time_arr = np.linspace(0, 13.6*(10**9), 100) 
-ti_rate_arr = [TOTAL_TI_RATE(time, aa_TImax_fn, const_SFR) for time in time_arr] 
-# plt.scatter(time_arr, ti_rate_arr)
-# This is perfectly linear! 
+ti_rate_arr = [TOTAL_TI_RATE(time, DTD, const_SFR) for time in time_arr] 
 
-slope = np.polyfit(time_arr, ti_rate_arr, deg=1)[0]
-print(slope) 
+#plt.plot(time_arr, ti_rate_arr)
+plt.plot(time_arr, DTD(time_arr))
+plt.show()
