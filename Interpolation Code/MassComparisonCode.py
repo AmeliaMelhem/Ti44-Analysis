@@ -3,8 +3,9 @@
 """
 @authors: Alexis Petty
 
-Creates plots to compare to figure 9 in https://articles.adsabs.harvard.edu/pdf/2006MNRAS.371..263L to verify FindHeMass.py
-is working correctly
+Creates plots to compare to figure 9 in 
+https://articles.adsabs.harvard.edu/pdf/2006MNRAS.371..263L 
+to verify FindHeMass.py is working correctly
 """
 
 
@@ -13,14 +14,14 @@ import numpy as np
 
 
 
-file = 1 # 0 for first file(aa), 1 for second(ag)
+file = 0 # 0 for first file(aa), 1 for second(ag)
 
-if file == 1:
-    data = np.loadtxt("../Output Data/noDashSeBa_aa_with_He.txt")    
-    fileName = 'Mass_Comparison_aa'
+if file == 0:
+    data = np.loadtxt("../Output Data/Extended Range WD He Mass/Full_SeBa_aa_with_He.txt")    
+    fileName = 'Full_Mass_Comparison_aa'
 else: 
-    data = np.loadtxt("../Output Data/noDashSeBa_ag_with_He.txt")
-    fileName = 'Mass_Comparison_ag'
+    data = np.loadtxt("../Output Data/Extended Range WD He Mass/Full_SeBa_ag_with_He.txt")
+    fileName = 'Full_Mass_Comparison_ag'
 
 
 
@@ -40,10 +41,10 @@ plt.plot(Mwd2, He_max_wd2,"b*")
 
 
 
-plt.title('WD-Mass VS He-Mass')
+plt.title('WD-Mass Vs. He-Mass')
 plt.legend(['W1min','W1max', 'W2min', 'W2max'])
-plt.ylabel('He-Mass')
-plt.xlabel('WD-Mass')
+plt.ylabel('Log He Mass')
+plt.xlabel('Log WD Mass')
 
 plt.savefig(fileName)
 
