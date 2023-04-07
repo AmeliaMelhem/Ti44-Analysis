@@ -16,12 +16,12 @@ import numpy as np
 
 file = 0 # 0 for first file(aa), 1 for second(ag)
 
-if file == 0:
+if file == 1:
     data = np.loadtxt("../Output Data/Extended Range WD He Mass/Full_SeBa_aa_with_He.txt")    
-    fileName = 'Full_Mass_Comparison_aa'
+    fileName = 'Combined_Mass_Comparison'
 else: 
     data = np.loadtxt("../Output Data/Extended Range WD He Mass/Full_SeBa_ag_with_He.txt")
-    fileName = 'Full_Mass_Comparison_ag'
+    fileName = 'Combined_Mass_Comparison'
 
 
 
