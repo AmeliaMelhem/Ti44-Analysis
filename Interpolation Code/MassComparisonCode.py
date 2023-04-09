@@ -45,6 +45,7 @@ Mwd2, He_min_wd2, He_max_wd2 = [list(i) for i in zip(*sorted_pairs)]
 
 plt.plot(Mwd2, He_min_wd2,"k-")
 plt.plot(Mwd2, He_max_wd2,"k--")
+plt.plot(-0.31852,-1.498498, "bo")
 
 
 plt.legend()
