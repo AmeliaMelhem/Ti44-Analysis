@@ -10,13 +10,13 @@ unphysical results at log(WDmass) ~ -0.3
 """
 
 #TODO:
-# rename file
-# add new lines to MCC to show interpolation
-# Let Daniel create new Ti44 info to show diff on results
+# fix sort order
+# Done!
 
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 file = 0 # 1 for first file(aa), 0 for second(ag)
 plotname = "HeLinMassComparison"
@@ -43,11 +43,11 @@ He_max_wd2=np.log10(data[:,10])
 i1 = data[:,0]
 i2 = i1
 
-sorted_pairs1 = sorted(zip(Mwd1, He_min_wd1, He_max_wd1, i1))
-sorted_pairs2 = sorted(zip(Mwd2, He_min_wd2, He_max_wd2, i2))
+# sorted_pairs1 = sorted(zip(Mwd1, He_min_wd1, He_max_wd1, i1))
+# sorted_pairs2 = sorted(zip(Mwd2, He_min_wd2, He_max_wd2, i2))
 
-Mwd1, He_min_wd1, He_max_wd1, i1 = [list(i) for i in zip(*sorted_pairs1)]
-Mwd2, He_min_wd2, He_max_wd2, i2 = [list(i) for i in zip(*sorted_pairs2)]
+# Mwd1, He_min_wd1, He_max_wd1, i1 = [list(i) for i in zip(*sorted_pairs1)]
+# Mwd2, He_min_wd2, He_max_wd2, i2 = [list(i) for i in zip(*sorted_pairs2)]
 
 plt.plot(Mwd1, He_min_wd1,"k-", label="He Mass min")
 plt.plot(Mwd1, He_max_wd1,"k--", label="He Mass max")
@@ -109,6 +109,8 @@ for i in range(len(Mwd1)):
         He_max_wd2[i] = m*Mwd2[i]+bMax
         He_min_wd2[i] = m*Mwd2[i]+bMin
 
+
+
 Mwd1Altered = []
 He_min_wd1_Alterd = []
 He_max_wd1_Alterd = []
@@ -125,37 +127,38 @@ plt.plot(Mwd1Altered, He_min_wd1_Alterd,"r-")
 
 # store new interped data:
     
-sorted_pairs1 = sorted(zip(i1, Mwd1, He_min_wd1, He_max_wd1))
-sorted_pairs2 = sorted(zip(i2, Mwd2, He_min_wd2, He_max_wd2))
-i1, Mwd1, He_min_wd1, He_max_wd1 = [list(i) for i in zip(*sorted_pairs1)]
-i2, Mwd2, He_min_wd2, He_max_wd2 = [list(i) for i in zip(*sorted_pairs2)]
+# sorted_pairs1 = sorted(zip(i1, Mwd1, He_min_wd1, He_max_wd1))
+# sorted_pairs2 = sorted(zip(i2, Mwd2, He_min_wd2, He_max_wd2))
+# i1, Mwd1, He_min_wd1, He_max_wd1 = [list(i) for i in zip(*sorted_pairs1)]
+# i2, Mwd2, He_min_wd2, He_max_wd2 = [list(i) for i in zip(*sorted_pairs2)]
 
-dataNew = data
 
-dataNew[:,7] = He_min_wd1[:]
-dataNew[:,9] = He_max_wd1[:]
+data[:,7] = [10**He_min_wd1[i] for i in range(len(data))]
+data[:,9] = [10**He_max_wd1[i] for i in range(len(data))]
 
-dataNew[:,8] = He_min_wd2[:]
-dataNew[:,10] = He_max_wd2[:]
-
-for i in range(len(data)):
-    diff = abs(data[i, 7] - dataNew[i, 7])
-    if diff != 0:
-        print(diff, i)
+data[:,8] = [10**He_min_wd2[i] for i in range(len(data))]
+data[:,10] = [10**He_max_wd2[i] for i in range(len(data))]
 
 
 # check interp functions: it works!!
 
-for i in range(len(Mwd1)):
-    diff = He_max_wd1[i] - He_min_wd1[i]
-    if diff < 0:
-        print(diff)
+# for i in range(len(Mwd1)):
+#     diff = He_max_wd1[i] - He_min_wd1[i]
+#     if diff < 0:
+#         print(diff)
 
 
 
 # Save as new txt file. Change header to False to be numpy compatible or add
 # '#' to the front of the first line of txt.
 
-# with open('./' + fileName, 'w') as f:
-#     dfAsString = pdDataset.to_string(header=True, index=False)
-#     f.write(dfAsString)
+pdDataset = pd.DataFrame(data, columns = 
+     ['id', 'DWD_formation_time(Myr)', 'time_of_merger(Myr)', 'Mwd1(Msun)', 
+      'Mwd2(Msun)', 'type_wd1', 'type_wd2', 'He_min_wd1(Msun)',  'He_min_wd2(Msun)',
+      'He_max_wd1(Msun) ', 'He_max_wd2(Msun)']
+     )
+
+
+with open('./' + fileName, 'w') as f:
+    dfAsString = pdDataset.to_string(header=True, index=False)
+    f.write(dfAsString)

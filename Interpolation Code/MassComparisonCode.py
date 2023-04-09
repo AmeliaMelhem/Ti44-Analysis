@@ -14,13 +14,13 @@ import numpy as np
 
 
 
-file = 0 # 0 for first file(aa), 1 for second(ag)
+file = 1 # 0 for first file(aa), 1 for second(ag)
 
-if file == 1:
-    data = np.loadtxt("../Output Data/Extended Range WD He Mass/Full_SeBa_aa_with_He.txt")    
+if file == 0:
+    data = np.loadtxt("./Full_SeBa_aa_with_He_Interp.txt")    
     fileName = 'Combined_Mass_Comparison'
 else: 
-    data = np.loadtxt("../Output Data/Extended Range WD He Mass/Full_SeBa_ag_with_He.txt")
+    data = np.loadtxt("../Output Data/Extended Range WD He Mass/Full_SeBa_ag_with_He_Interp.txt")
     fileName = 'Combined_Mass_Comparison'
 
 

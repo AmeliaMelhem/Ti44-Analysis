@@ -23,7 +23,7 @@ if file == 0:
     dataset = np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data")
     fileName = 'Full_SeBa_aa_with_He.txt'
 else: 
-    dataset = dataset = np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data")
+    dataset = np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data")
     fileName = 'Full_SeBa_ag_with_He.txt'
 
 
@@ -151,5 +151,5 @@ pdDataset = removeNull(pdDataset)
 # '#' to the front of the first line of txt.
 
 with open('./' + fileName, 'w') as f:
-    dfAsString = pdDataset.to_string(header=True, index=False)
+    dfAsString = pdDataset.to_string(header=False, index=False)
     f.write(dfAsString)
