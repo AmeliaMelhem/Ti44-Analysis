@@ -13,14 +13,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-
-file = 1 # 0 for first file(aa), 1 for second(ag)
+file = 0 # 0 for first file(aa), 1 for second(ag)
 
 if file == 0:
-    data = np.loadtxt("./Full_SeBa_aa_with_He_Interp.txt")    
+    data = np.loadtxt("./Full_He_aa_with_Zenati.txt")    
     fileName = 'Combined_Mass_Comparison'
 else: 
-    data = np.loadtxt("../Output Data/Extended Range WD He Mass/Full_SeBa_ag_with_He_Interp.txt")
+    data = np.loadtxt("./Full_He_ag_with_Zenati.txt")
     fileName = 'Combined_Mass_Comparison'
 
 
@@ -45,7 +44,7 @@ Mwd2, He_min_wd2, He_max_wd2 = [list(i) for i in zip(*sorted_pairs)]
 
 plt.plot(Mwd2, He_min_wd2,"k-")
 plt.plot(Mwd2, He_max_wd2,"k--")
-plt.plot(-0.31852,-1.498498, "bo")
+#plt.plot(-0.31852,-1.498498, "bo")
 
 
 plt.legend()

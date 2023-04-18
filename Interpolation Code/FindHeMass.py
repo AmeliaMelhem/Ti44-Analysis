@@ -7,7 +7,8 @@ Created on Wed Jun 15 15:22:20 2022
 """
 
 ### Finds estimated He mass in WD given total mass using
-### https://articles.adsabs.harvard.edu/pdf/2006MNRAS.371..263L
+### https://articles.adsabs.harvard.edu/pdf/2006MNRAS.371..263L and
+### https://academic.oup.com/mnras/article/482/1/1135/5124388 (table 1)
 
 ## Assumes Z = 0.01 and that WD core mass is equal to total mass
 ## Also assumes that the buffer mass of the He is equal to the total He mass
@@ -20,11 +21,11 @@ import pandas as pd
 file = 0 # 0 for first file(aa), 1 for second(ag)
 
 if file == 0:
-    dataset = np.loadtxt("../Input Data/SeBa_aa_020418_production_run_wdwd_bob.data")
-    fileName = 'Full_SeBa_aa_with_He.txt'
+    dataset = np.loadtxt("./Input Data/SeBa_aa_020418_production_run_wdwd_bob.data")
+    fileName = 'Full_He_aa_with_Zenati.txt'
 else: 
-    dataset = np.loadtxt("../Input Data/SeBa_ag_020418_production_run_wdwd_bob.data")
-    fileName = 'Full_SeBa_ag_with_He.txt'
+    dataset = np.loadtxt("./Input Data/SeBa_ag_020418_production_run_wdwd_bob.data")
+    fileName = 'Full_He_ag_with_Zenati.txt'
 
 
 
@@ -66,6 +67,7 @@ pdDataset['He_max_wd2(Msun)'] = 0
 
 def MBuff(mass, a, b, c, d, e): # Too specific to be generalized -AM
     """
+    [OUTDATED DESCRIPTION]
     Uses Equation 9 to estimate He Mass given the WD mass and parameters
     
     Parameters
@@ -81,21 +83,22 @@ def MBuff(mass, a, b, c, d, e): # Too specific to be generalized -AM
 
     """
     
-    #if mass < d or mass > e: #Writes '-' if the mass is not within the acccepted range
-    #    MBuff = '-'   
-    #    
-    #else:
-    #    MBuff = 10**(a + b*np.log10(mass) + c*(np.log10(mass)**2)) # Equation 9
+    if mass < 0.52 and mass > 0.4: # Figure 1 Zenati et al
+       MBuff =  0.28 - 0.39*mass
 
-    MBuff = 10**(a + b*np.log10(mass) + c*(np.log10(mass)**2))
-            
+    elif mass < 0.4 and mass > 0.3: #second check is somewhat irrelevent as mass is never below 0.3
+        MBuff = mass - 0.3    
+    
+    else:
+        MBuff = 10**(a + b*np.log10(mass) + c*(np.log10(mass)**2)) # Equation 9 Lawlor and MacDonald
+
     return MBuff
 
 
 ## Uses MBuff to assign buffer mass values in pdDataset 
 ## Assumes Z = 0.01
 
-def assignMass(df): # Planned to be generalized at some point
+def assignMass(df): 
     
     for x in range(len(df)):
         row = x
@@ -151,5 +154,5 @@ pdDataset = removeNull(pdDataset)
 # '#' to the front of the first line of txt.
 
 with open('./' + fileName, 'w') as f:
-    dfAsString = pdDataset.to_string(header=False, index=False)
+    dfAsString = pdDataset.to_string(header=True, index=False)
     f.write(dfAsString)
