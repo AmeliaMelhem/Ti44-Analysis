@@ -31,6 +31,7 @@ labelList = ["He Mass min Z=0.0002" ,"He Mass max Z=0.0002",
              "He Mass min Z=0.01"   ,"He Mass max Z=0.01",
              "He Mass min Z=0.02"   ,"He Mass max Z=0.02"]
 
+plt.figure(figsize=(10,6))
 
 for i in range(3):
     Mwd2=np.log10(data[:,4])
@@ -51,11 +52,11 @@ for i in range(3):
     plt.plot(Mwd2, He_min_wd2,colorList[2*i])
     plt.plot(Mwd2, He_max_wd2,colorList[2*i+1])
 
+
 plt.legend()
 plt.ylabel('Log He Mass ($M_{\odot}$)')
 plt.xlabel('Log WD Mass ($M_{\odot}$)')
 plt.title('He Shell from WD Mass with Differing Metallicities')
-
 plt.savefig(fileName)
 
 plt.show()
