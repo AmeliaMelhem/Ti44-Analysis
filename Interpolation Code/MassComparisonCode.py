@@ -17,15 +17,14 @@ file = 0 # 0 for first file(aa), 1 for second(ag)
 
 if file == 0:
     data = np.loadtxt("../Output Data/Full_He_aa_with_Zenati.txt")    
-    fileName = 'Combined_Mass_Comparison'
+    fileName = '../Plots/He_Mass_Metallicity_Comparison'
 else: 
     data = np.loadtxt("../Output Data/Full_He_ag_with_Zenati.txt")
-    fileName = 'Combined_Mass_Comparison'
+    fileName = '../Plots/He_Mass_Metallicity_Comparison'
 
 
 
-
-colorList = ["g-","g--",
+colorList = ["r-","r--",
              "b-","b--",
              "k-","k--"]
 labelList = ["He Mass min Z=0.0002" ,"He Mass max Z=0.0002",
@@ -55,7 +54,8 @@ for i in range(3):
 plt.legend()
 plt.ylabel('Log He Mass ($M_{\odot}$)')
 plt.xlabel('Log WD Mass ($M_{\odot}$)')
+plt.title('He Shell from WD Mass with Differing Metallicities')
 
-#plt.savefig(fileName)
+plt.savefig(fileName)
 
 plt.show()
