@@ -1,4 +1,4 @@
-# Ti44 Analysi
+# Ti44 Analysis
 
 ## Input Data
 A directory for tables and data pulled from outside sources and papers.
