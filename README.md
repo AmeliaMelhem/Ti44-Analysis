@@ -16,12 +16,10 @@ This where our group kept any functions we found ourselves using multiple times 
 ### FindHeMass.py
 Estimates the helium shell mass of each white dwarf in the SeBa data using the total mass of the star. It first checks if the mass is within 0.4 to 0.52 solar masses. If so, it will assign a mass using Zenati et al. The equation used is: 
 
-![equation](https://latex.codecogs.com/svg.image?M_{He}=0.28-0.39M_{WD})
+![](https://latex.codecogs.com/svg.image?M_{He}=0.28-0.39M_{WD})
 
 However, if the WD mass is not within this range, then it will use equation 9 from Lawlor and MacDonald:
-$$
-log_{10}(M_{He})=a+b\*log_{10}(M_{WD})+c\*log_{10}(M_{WD})^2
-$$
+$$log_{10}(M_{He})=a+b\*log_{10}(M_{WD})+c\*log_{10}(M_{WD})^2$$
 
 Where $a,b,$ and $c$ are definded based on the metalicity of the white dwarf. Currently, we have assumed the the metalicity of the stars are all $z=0.01$. However, we are looking into the effects of having different metalicity values. The He shell masses are appended to the original data file and sent to /Output\_data.
 
