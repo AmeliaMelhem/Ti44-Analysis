@@ -151,27 +151,17 @@ def nearestNeighborLinearInterp(inputXandY, toEstimateX):
     return y
 
 
-def positronFromTi(tiMass):
+def findInterval(dataset):
     """
     Parameters
     ----------
-    tiMass : A list or 1D array with each value being the mass of Ti44 in
-    solar masses.
+    dataset : A numpy array  of numbers.
 
     Returns
     -------
-    positronAmount : A list with the cooresponding number of positrons for each
-    Ti mass.
+    intervals : First sorts the input list, then finds the interval between each 
+    point. len(intervals)=len(dataset)-1.
     """
-    
-    positronAmount = []
-    for x in range(len(tiMass)):
-        positronAmount.append(tiMass[x]*2.724694722*(10**55))
-    
-    return positronAmount
-
-
-def findInterval(dataset):
     import numpy as np
     intervals = []
     dataset = np.sort(dataset)
@@ -179,18 +169,4 @@ def findInterval(dataset):
         intervals.append( dataset[x+1]-dataset[x] ) 
     
     return intervals
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
