@@ -28,7 +28,7 @@ and our fit is just a linear combination of |r| that spans dim(# of data points)
 
 # includes ...
 from rbf_interp import * 
-#import numpy as np (within rbf_interp) 
+import numpy as np
 import pandas as pd 
 from scipy.optimize import curve_fit 
 from scipy.integrate import quad
