@@ -55,22 +55,24 @@ dataset = np.delete(dataset, xList, axis = 0)
 
 pdDataset = pd.DataFrame(dataset, columns = ['id', 'DWD_formation_time(Myr)', 
                                              'time_of_merger(Myr)', 'Mwd1(Msun)', 
-                                             'Mwd2(Msun)', 'type_wd1', 'type_wd2' ])
+                                             'Mwd2(Msun)', 'type_wd1', 'type_wd2' ], 
+                                             dtype=np.single)
+
 # Initalize new columns for calculated data
-pdDataset['He_min_wd1(Msun)_Z0002'] = 0
-pdDataset['He_min_wd2(Msun)_Z0002'] = 0
-pdDataset['He_max_wd1(Msun)_Z0002'] = 0
-pdDataset['He_max_wd2(Msun)_Z0002'] = 0
+pdDataset['He_min_wd1(Msun)_0002'] = 0.
+pdDataset['He_min_wd2(Msun)_0002'] = 0.
+pdDataset['He_max_wd1(Msun)_0002'] = 0.
+pdDataset['He_max_wd2(Msun)_0002'] = 0.
 
-pdDataset['He_min_wd1(Msun)_Z01'] = 0
-pdDataset['He_min_wd2(Msun)_Z01'] = 0
-pdDataset['He_max_wd1(Msun)_Z01'] = 0
-pdDataset['He_max_wd2(Msun)_Z01'] = 0
+pdDataset['He_min_wd1(Msun)_01'] = 0.
+pdDataset['He_min_wd2(Msun)_01'] = 0.
+pdDataset['He_max_wd1(Msun)_01'] = 0.
+pdDataset['He_max_wd2(Msun)_01'] = 0.
 
-pdDataset['He_min_wd1(Msun)_Z02'] = 0
-pdDataset['He_min_wd2(Msun)_Z02'] = 0
-pdDataset['He_max_wd1(Msun)_Z02'] = 0
-pdDataset['He_max_wd2(Msun)_Z02'] = 0
+pdDataset['He_min_wd1(Msun)_02'] = 0.
+pdDataset['He_min_wd2(Msun)_02'] = 0.
+pdDataset['He_max_wd1(Msun)_02'] = 0.
+pdDataset['He_max_wd2(Msun)_02'] = 0.
 
 ## Function to find the buffer mass given WD mass and variables from Table 6
 ## Mass assumed to be given in solar masses
@@ -128,9 +130,7 @@ def assignMass(df):
              z0_01_min  , z0_01_max, 
              z0_02_min  , z0_02_max]
     
-    for x in range(len(df)):
-        row = x
-        
+    for row in range(len(df)):
         for i in range(3):
 
             ## MBuff min 
@@ -154,9 +154,8 @@ def assignMass(df):
 
 def removeNull(df): # Could be generalized if useful but probably not -AM
     xList = []
-    for x in range(len(df)):
+    for row in range(len(df)):
         for i in range(3):
-            row = x
             if (df.iat[row, 4*i+7] == '-' and # change all 'and' to 'or' to only
                 df.iat[row, 4*i+8] == '-' and # store information when all 4 buffer
                 df.iat[row, 4*i+9] == '-' and # masses can be found
