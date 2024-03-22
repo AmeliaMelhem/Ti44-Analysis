@@ -108,7 +108,7 @@ class RBF_interp:
         return np.mean(errs) 
         
 
-    def optimize(self, lo = 0, hi = 0): 
+    def optimize(self, vals, lo = 0, hi = 0): 
         # modifies self.scale such that self.err() is minimized 
         # lo/hi parameters augment the range of scale factors tested
 
