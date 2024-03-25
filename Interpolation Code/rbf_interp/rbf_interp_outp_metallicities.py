@@ -31,7 +31,7 @@ import sys
 
 sys.path.append('../')
 import numpy as np
-from rbf_interp.rbf_interp import RBF_interp
+from rbf_interp import RBF_interp
 import pandas as pd 
 from scipy.optimize import curve_fit 
 from scipy.integrate import quad
@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 ######### Importing Data ############
 
 # Data from Gronow and Leung papers 
-ti_data = np.loadtxt('../../Input Data/he_co_ti_dat.txt') 
+ti_data = np.loadtxt('Input Data/he_co_ti_dat.txt') 
 pts = ti_data[:,0:2] # Helium and Core masses 
 vals = ti_data[:,2] # Ti44 masses 
 
@@ -49,9 +49,9 @@ vals = ti_data[:,2] # Ti44 masses
 ti_interp = RBF_interp(pts, vals, func = "multiquadric", scale = 0, norm = True) 
 
 # SeBa data 
-aa_df = pd.read_csv("../../Output Data/Full_He_aa_with_Zenati.txt", sep='\s+', index_col=False)
+aa_df = pd.read_csv("Output Data/Full_He_aa_with_Zenati.txt", sep='\s+', index_col=False)
 aa_df = aa_df.shift(periods=1, axis=1) 
-ag_df = pd.read_csv("../../Output Data/Full_He_ag_with_Zenati.txt", sep='\s+', index_col=False) 
+ag_df = pd.read_csv("Output Data/Full_He_ag_with_Zenati.txt", sep='\s+', index_col=False) 
 ag_df = ag_df.shift(periods=1, axis=1) 
 # a*_dat is organized as follows: 
 # Column 0: # (nan) 
@@ -285,7 +285,7 @@ ag_times_lin = np.linspace(np.amin(ag_times), np.amax(ag_times), 150)
 #plt.ylabel("Ti44 mass (Msun)") 
 #plt.legend() 
 #plt.show()
-# plt.savefig("../../Plots/rbf_interp_plots/results/aaTi_total") 
+# plt.savefig("Plots/rbf_interp_plots/results/aaTi_total") 
 # plt.close("all") 
 # ag
 #plt.scatter(ag_times, ag_totalTi_max, color = 'Red', alpha = 0.5, label = 'He max') 
@@ -297,6 +297,6 @@ ag_times_lin = np.linspace(np.amin(ag_times), np.amax(ag_times), 150)
 #plt.ylabel("Ti44 mass (Msun)") 
 #plt.legend() 
 #plt.show()
-#plt.savefig("../../Plots/rbf_interp_plots/results/agTi_total") 
+#plt.savefig("Plots/rbf_interp_plots/results/agTi_total") 
 #plt.close("all") 
 

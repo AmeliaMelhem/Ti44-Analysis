@@ -47,14 +47,17 @@ def plotSFR(maxSet, minSet, zLabel):
     ###################plot the ti44 rate for history of milky way########################################
     milky_way_timed_rate = timed_rate*mass_ratio
     plt.plot(ag_times, milky_way_timed_rate, label = zLabel)
+    return milky_way_timed_rate
 
 
-plotSFR(ag_ti_max_0002,ag_ti_min_0002, 'Crocker et al (disk) - Z=0.0002')
-plotSFR(ag_ti_max_01,ag_ti_min_01, 'Crocker et al (disk) - Z=0.01')
-plotSFR(ag_ti_max_02,ag_ti_min_02, 'Crocker et al (disk) - Z=0.02')
+MW_0002_Rate = plotSFR(ag_ti_max_0002,ag_ti_min_0002, 'Crocker et al (disk) - Z=0.0002')
+MW_01_Rate   = plotSFR(ag_ti_max_01,ag_ti_min_01, 'Crocker et al (disk) - Z=0.01')
+MW_02_Rate   = plotSFR(ag_ti_max_02,ag_ti_min_02, 'Crocker et al (disk) - Z=0.02')
 
+np.savetxt("Output Data/MW_Rates.csv", np.asarray([ MW_0002_Rate, MW_01_Rate, MW_02_Rate ]), delimiter=",")
 
-
+plt.show()
+# quit()
 
 ###############################################################SFR_exp+0.12t###################################
 integrand = []
